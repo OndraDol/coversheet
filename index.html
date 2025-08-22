@@ -269,7 +269,9 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
 
     <div class="actions bottom">
       <button id="printBtn" class="primary">Uložit jako PDF</button>
+      <button id="copyBtn" title="Zkopíruje HTML tabulku pro Outlook">Kopírovat do schránky (HTML)</button>
       <button id="resetBtn" class="ghost">Vyčistit</button>
+      <span id="copyStatus" class="muted" style="margin-left:8px;"></span>
     </div>
 
     <section id="printView" class="card">
@@ -327,7 +329,6 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       return new Intl.NumberFormat('cs-CZ',{style:'currency',currency:'CZK',maximumFractionDigits:0}).format(n);
     }
 
-    // Light date formatter: try to format known patterns, otherwise echo
     function fmtDate(v){
       if(!v) return '';
       const d = new Date(v);
@@ -379,12 +380,11 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
     }
     function ensureKcSuffix(text){
       let t=String(text||'').trim();
-      t = t.replace(/\s*Kč\s*$/i,''); // odstraň duplicitní "Kč"
+      t = t.replace(/\s*Kč\s*$/i,''); 
       if(!hasDigit(t)) return t;
       return t+' Kč';
     }
 
-    // Bonus helpers
     function cleanBonusAmount(val){
       const t=String(val||'').trim();
       return /^0\s*-\s*(Kč)?$/i.test(t) ? '' : t;
@@ -403,12 +403,12 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       return amt && range ? (amt + ' (' + range + ')') : (amt || range);
     }
     function normalizeNonZero(val){
-      const cleaned = cleanBonusAmount(val); // "" pro "0 -"
+      const cleaned = cleanBonusAmount(val); 
       if(!cleaned) return '';
       return ensureKcSuffix(formatNumbersWithSpaces(cleaned));
     }
 
-    const els = {
+    const els = { 
       fullName: $('#fullName'), company: $('#company'),
       foreignerYes: $('#foreignerYes'), foreignerNo: $('#foreignerNo'),
       catRole: $('#catRole'), contractRole: $('#contractRole'), branch: $('#branch'),
@@ -429,11 +429,11 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       homeYes: $('#homeYes'), homeNo: $('#homeNo'), homeWrap: $('#homeWrap'), homeType: $('#homeType'),
       homePlaceWrap: $('#homePlaceWrap'), homePlace: $('#homePlace'),
       notes: $('#notes'),
-      printBtn: $('#printBtn'), resetBtn: $('#resetBtn'),
+      printBtn: $('#printBtn'), resetBtn: $('#resetBtn'), copyBtn: $('#copyBtn'),
+      copyStatus: $('#copyStatus'),
       pv: { genAt: $('#genAt'), printTitle: $('#printTitle'), fullName: $('#pv_fullName'), company: $('#pv_company'), foreigner: $('#pv_foreigner'), catRole: $('#pv_catRole'), contractRole: $('#pv_contractRole'), branch: $('#pv_branch'), payFlag: $('#pv_payFlag'), workTime: $('#pv_workTime'), rel: $('#pv_rel'), dppHead: $('#pv_dpp_head'), hourlyRow: $('#pv_hourly_row'), hourly: $('#pv_hourly'), hpp: { baseRow: $('#pv_hpp_base'), base: $('#pv_base'), kpiRow: $('#pv_hpp_kpi'), kpi: $('#pv_kpi'), osohRow: $('#pv_hpp_osoh'), osoh: $('#pv_osoh'), varRow: $('#pv_hpp_var'), v: $('#pv_var'), qRow: $('#pv_hpp_q'), q: $('#pv_q'), yearRow: $('#pv_hpp_year'), year: $('#pv_year') }, start: $('#pv_start'), signDate: $('#pv_signDate'), signer: $('#pv_signer'), signPrague: $('#pv_signPrague'), recruit: $('#pv_recruit'), home: $('#pv_home'), homePlaceRow: $('#pv_homePlace_row'), homePlace: $('#pv_homePlace'), notes: $('#pv_notes') }
     };
 
-    // Exkluzivní přepínače (Ano/Ne)
     function makeExclusive(a,b){
       a.addEventListener('change',()=>{ if(a.checked) b.checked=false; if(!a.checked && !b.checked) b.checked=true; updateUI(); });
       b.addEventListener('change',()=>{ if(b.checked) a.checked=false; if(!a.checked && !b.checked) a.checked=true; updateUI(); });
@@ -442,17 +442,7 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
     makeExclusive(els.recruitYes, els.recruitNo);
     makeExclusive(els.homeYes, els.homeNo);
 
-    // Formátování částek i bez blur
-    ['baseSalary','kpiBonus','osoh','varBonus','qBonus','yearBonus','hourly'].forEach(id=>{
-      const el=els[id];
-      el.addEventListener('blur',()=>{
-        let v=el.value;
-        v=formatNumbersWithSpaces(v);
-        v=ensureKcSuffix(v);
-        el.value=v;
-        updatePreview();
-      });
-    });
+    ['baseSalary','kpiBonus','osoh','varBonus','qBonus','yearBonus','hourly'].forEach(id=>{ const el=els[id]; el.addEventListener('blur',()=>{ let v=el.value; v=formatNumbersWithSpaces(v); v=ensureKcSuffix(v); el.value=v; updatePreview(); }); });
 
     [els.relHPP, els.relDPP, els.relDPC].forEach(r => r.addEventListener('change', updateUI));
 
@@ -461,14 +451,12 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
     els.homeYes   .addEventListener('change', ()=>{ const on=els.homeYes.checked; els.homeWrap.style.display = on ? 'flex' : 'none'; els.homePlaceWrap.style.display = on ? 'block' : 'none'; updateUI(); });
     els.homeNo    .addEventListener('change', ()=>{ const on=els.homeYes.checked; els.homeWrap.style.display = on ? 'flex' : 'none'; els.homePlaceWrap.style.display = on ? 'block' : 'none'; updateUI(); });
 
-    // Další mzdové složky
-    els.moreBtn?.addEventListener('click', ()=>{
-      const open = els.hppMore.style.display !== 'none';
-      els.hppMore.style.display = open ? 'none' : 'block';
-      els.moreBtn.textContent = open ? '+ Další mzdové složky' : '− Skrýt mzdové složky';
+    els.moreBtn?.addEventListener('click', ()=>{ 
+      const open = els.hppMore.style.display !== 'none'; 
+      els.hppMore.style.display = open ? 'none' : 'block'; 
+      els.moreBtn.textContent = open ? '+ Další mzdové složky' : '− Skrýt mzdové složky'; 
     });
 
-    // Typeahead + normalizace bez diakritiky (limit 10 návrhů)
     const POSITIONS = JSON.parse(document.getElementById('position-data').textContent||'[]');
     const BRANCHES  = JSON.parse(document.getElementById('branch-data').textContent||'[]');
     const taCat = document.getElementById('taCat');
@@ -477,7 +465,7 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
 
     function norm(s){
       s = String(s||'');
-      try{ if (typeof s.normalize === 'function') s = s.normalize('NFD').replace(/[\u0300-\u036f]+/g, ''); }catch(e){}
+      try{ if (typeof s.normalize === 'function') s = s.normalize('NFD').replace(/[̀-ͯ]+/g, ''); }catch(e){}
       return s.toLowerCase();
     }
     function uniqueContracts(list){
@@ -489,22 +477,19 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
 
     function buildList(container, items, onPick){
       container.innerHTML = items.map((txt,i)=>'<div class="ta-item" data-idx="'+i+'"></div>').join('');
-      Array.from(container.children).forEach((el,i)=>{
-        el.textContent = items[i];
-        el.addEventListener('mousedown', (e)=>{ e.preventDefault(); onPick(items[i]); hide(container); });
-      });
+      Array.from(container.children).forEach((el,i)=>{ el.textContent = items[i]; el.addEventListener('mousedown', (e)=>{ e.preventDefault(); onPick(items[i]); hide(container); }); });
       show(container);
     }
     function show(el){ el.style.display='block'; }
     function hide(el){ el.style.display='none'; el.innerHTML=''; }
-    function attachTypeahead(input, container, sourceItems, onPick){
+    function attachTypeahead(input, container, sourceItems, onPick){ 
       let cursor=-1;
-      function refresh(){
+      function refresh(){ 
         const q = norm(input.value).trim();
         if (!q) { hide(container); return; }
         let starts = sourceItems.filter(v=>norm(v).startsWith(q));
         let subs   = sourceItems.filter(v=>!norm(v).startsWith(q) && norm(v).includes(q));
-        const opts = [...starts, ...subs].slice(0, MAX_SUGGESTIONS);
+        const opts = [...starts, ...subs].slice(0, 10);
         if (!opts.length) { hide(container); return; }
         buildList(container, opts, onPick);
         cursor=-1;
@@ -512,7 +497,7 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       input.addEventListener('input', refresh);
       input.addEventListener('click', refresh);
       input.addEventListener('focus', refresh);
-      input.addEventListener('keydown', (e)=>{
+      input.addEventListener('keydown', (e)=>{ 
         const open = container.style.display==='block';
         if (!open) return;
         const items = Array.from(container.querySelectorAll('.ta-item'));
@@ -524,37 +509,36 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       input.addEventListener('blur', ()=>{ setTimeout(()=>hide(container), 120); });
     }
 
-    attachTypeahead(els.catRole, taCat, POSITIONS.map(p=>p.catalog), (picked)=>{
-      els.catRole.value = picked;
+    attachTypeahead(els.catRole, taCat, POSITIONS.map(p=>p.catalog), (picked)=>{ 
+      els.catRole.value = picked; 
       const m = POSITIONS.find(p=>norm(p.catalog)===norm(picked));
       if (m && m.contract) els.contractRole.value = m.contract;
       updatePreview();
     });
 
-    attachTypeahead(els.contractRole, taContract, CONTRACTS, (picked)=>{
-      els.contractRole.value = picked;
+    attachTypeahead(els.contractRole, taContract, CONTRACTS, (picked)=>{ 
+      els.contractRole.value = picked; 
       const m = POSITIONS.find(p=>norm(p.contract)===norm(picked));
       if (m) els.catRole.value = m.catalog;
       updatePreview();
     });
 
-    attachTypeahead(els.branch, taBranch, BRANCHES, (picked)=>{
+    attachTypeahead(els.branch, taBranch, BRANCHES, (picked)=>{ 
       els.branch.value = picked;
       updatePreview();
     });
 
-    // --- Filename helpers ---
     function stripDiacritics(s){
-      return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]+/g, '');
+      return String(s||'').normalize('NFD').replace(/[̀-ͯ]+/g, '');
     }
     function tokenize(s){
       return stripDiacritics(s).replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'').replace(/-{2,}/g,'-');
     }
     function extractMonthYear(s){
       s = String(s||'');
-      let m = s.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/); // YYYY-MM-DD
+      let m = s.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/); 
       if(m) return {month:String(parseInt(m[2],10)), year:m[1]};
-      m = s.match(/(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})/); // DD.MM.YYYY
+      m = s.match(/(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})/); 
       if(m){ let y=m[3]; if(y.length===2) y='20'+y; return {month:String(parseInt(m[2],10)), year:y}; }
       m = s.match(/(?:^|\D)(\d{1,2})(?:\D+)(\d{4})(?:\D|$)/);
       if(m){ return {month:String(parseInt(m[1],10)), year:m[2]}; }
@@ -574,22 +558,127 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       return parts.join('_') || 'Coversheet';
     }
 
-    // Tlačítka
-    els.printBtn.addEventListener('click',(e)=>{
-      e.preventDefault();
-      updatePreview();
+    function esc(s){
+      return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function buildEmailHtml(){
+      const name = (els.fullName.value||'').trim();
+      const rel = document.querySelector('input[name="rel"]:checked')?.value || 'HPP';
+
+      const base = amountWithFrom(ensureKcSuffix(formatNumbersWithSpaces(els.baseSalary.value)), els.baseFrom.value);
+      const kpi  = amountWithFrom(normalizeNonZero(els.kpiBonus.value),  els.kpiFrom.value);
+      const osoh = amountWithFrom(normalizeNonZero(els.osoh.value),      els.osohFrom.value);
+      const v    = amountWithRange(normalizeNonZero(els.varBonus.value), els.varFrom.value, els.varTo.value);
+      const q    = amountWithFrom(normalizeNonZero(els.qBonus?.value||''),  els.qFrom?.value||'');
+      const year = amountWithFrom(normalizeNonZero(els.yearBonus?.value||''),els.yearFrom?.value||'');
+
+      const rows = [
+        ['Jméno a příjmení', esc(name)],
+        ['Společnost', esc(els.company.value)],
+        ['Cizinec', esc(els.foreignerYes.checked ? 'Ano' : 'Ne')],
+        ['Katalogová pozice', esc(els.catRole.value.trim())],
+        ['Smluvní pozice', esc(els.contractRole.value.trim())],
+        ['Pobočka', esc(els.branch.value||'')],
+        ['Příznak proplacení', esc(els.payFlag.value||'Ne')],
+        ['Pracovní doba', esc(els.workTime.value||'')],
+        ['Pracovní vztah', esc(rel)]
+      ];
+
+      const showHourly = rel==='DPP' || rel==='DPČ';
+      if(showHourly && els.hourly.value){
+        rows.push(['DPP/DPČ – Odměna', esc(fmtCZK(els.hourly.value) + '/hod.')]);
+      }
+
+      if(rel==='HPP'){
+        if(base) rows.push(['Základní mzda', esc(base)]);
+        if(kpi)  rows.push(['KPI bonus', esc(kpi)]);
+        if(osoh) rows.push(['OSOH', esc(osoh)]);
+        if(v)    rows.push(['Variabilní bonus', esc(v)]);
+        if(q)    rows.push(['Q bonus', esc(q)]);
+        if(year) rows.push(['Roční bonus', esc(year)]);
+      }
+
+      rows.push(
+        ['Datum nástupu', esc(fmtDate(els.startDate.value))],
+        ['Datum podpisu smlouvy', esc(fmtDate(els.signDate.value))],
+        ['Podepisující', esc(els.signer.value.trim())],
+        ['Podpis osobně v Praze', esc(els.signPrague.value)]
+      );
+
+      rows.push(['Náborový příspěvek', esc(els.recruitYes.checked ? (els.recruitAmt.value==='50000' ? 'Ano – 50 000 Kč' : 'Ano – 30 000 Kč') : 'Ne')]);
+
+      if(els.homeYes.checked){
+        rows.push(['Home office', esc('Ano – ' + els.homeType.value)]);
+        if(els.homePlace.value.trim()) rows.push(['Místo výkonu práce', esc(els.homePlace.value.trim())]);
+      } else {
+        rows.push(['Home office', 'Ne']);
+      }
+
+      if(els.notes.value.trim()) rows.push(['Poznámky', esc(els.notes.value.trim()).replace(/\n/g,'<br>')]);
+
+      const genAt = new Date().toLocaleString('cs-CZ');
+
+      let html = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>';
+      html += '<div style="font-family:Segoe UI,Arial,sans-serif;color:#102a43">';
+      html += '<h3 style="margin:0 0 8px 0;color:#0b2b50">Coversheet – ' + esc(name || '') + '</h3>';
+      html += '<div style="font-size:12px;color:#334e68;margin:0 0 8px 0">Vygenerováno: ' + esc(genAt) + '</div>';
+      html += '<table role="presentation" cellspacing="0" cellpadding="0" style="border-collapse:collapse;width:100%;max-width:860px;font-size:13px">';
+      html += rows.map(([k,v])=>'<tr><td style="border:1px solid #b7cbe0;padding:6px 8px;font-weight:600;background:#f7fbff;white-space:nowrap">'+k+'</td><td style="border:1px solid #b7cbe0;padding:6px 8px">'+(v||'')+'</td></tr>').join('');
+      html += '</table></div></body></html>';
+      return html;
+    }
+
+    async function copyHtml(){
+      els.copyStatus.textContent = 'Kopíruji…';
+      const html = buildEmailHtml();
+
+      try {
+        if (navigator.clipboard && window.ClipboardItem) {
+          const item = new ClipboardItem({'text/html': new Blob([html], {type:'text/html'})});
+          await navigator.clipboard.write([item]);
+          els.copyStatus.textContent = 'Zkopírováno jako HTML.';
+          return;
+        }
+      } catch(e){ }
+
+      try {
+        const tmp = document.createElement('div');
+        tmp.contentEditable = 'true';
+        tmp.style.position = 'fixed'; tmp.style.left = '-9999px'; tmp.style.top = '0';
+        tmp.innerHTML = html;
+        document.body.appendChild(tmp);
+        const range = document.createRange();
+        range.selectNodeContents(tmp);
+        const sel = window.getSelection();
+        sel.removeAllRanges(); sel.addRange(range);
+        document.execCommand('copy');
+        document.body.removeChild(tmp);
+        els.copyStatus.textContent = 'Zkopírováno jako HTML.';
+        return;
+      } catch(e){ }
+
+      try {
+        await navigator.clipboard.writeText(html);
+        els.copyStatus.textContent = 'Zkopírováno (prostý text).';
+      } catch(e){
+        els.copyStatus.textContent = 'Nepovedlo se zkopírovat.';
+      }
+    }
+
+    document.getElementById('printBtn').addEventListener('click',(e)=>{ 
+      e.preventDefault(); 
+      updatePreview(); 
       const prev = document.title;
       document.title = buildPdfFilename();
       const restore = ()=>{ document.title = prev; window.removeEventListener('afterprint', restore); };
       window.addEventListener('afterprint', restore);
-      setTimeout(()=>window.print(),20);
+      setTimeout(()=>window.print(),20); 
     });
-    els.resetBtn.addEventListener('click',(e)=>{
+    document.getElementById('copyBtn').addEventListener('click',(e)=>{ e.preventDefault(); updatePreview(); copyHtml(); });
+    document.getElementById('resetBtn').addEventListener('click',(e)=>{ 
       e.preventDefault();
-      document.getElementById('formRoot').querySelectorAll('input').forEach(inp=>{
-        if(inp.type==='checkbox'||inp.type==='radio') return;
-        inp.value='';
-      });
+      document.getElementById('formRoot').querySelectorAll('input').forEach(inp=>{ if(inp.type==='checkbox'||inp.type==='radio') return; inp.value=''; });
       els.company.value='AURES Holdings';
       els.branch.value='Praha 8 - Dolní Chabry';
       els.signPrague.value='Ne';
@@ -678,7 +767,6 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       els.pv.notes.textContent=els.notes.value.trim();
     }
 
-    // defaults
     els.company.value='AURES Holdings';
     els.branch.value='Praha 8 - Dolní Chabry';
     updateUI(); updatePreview();
