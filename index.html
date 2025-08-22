@@ -21,6 +21,7 @@
     textarea{ min-height:120px; resize:vertical; }
     input::placeholder{ color:#829ab1; }
     input:focus, select:focus, textarea:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,93,168,.18); }
+    .invalid{ border-color:#d93025 !important; box-shadow:0 0 0 3px rgba(217,48,37,.15) !important; }
     .row{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
     .chip{ display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--border); padding:8px 10px; border-radius:12px; color:var(--text); }
     .chip input{ transform:translateY(1px); }
@@ -321,8 +322,20 @@ Doba určitá, zkrácený úvazek, zkušební doba...."></textarea>
     const $ = (s) => document.querySelector(s);
 
     function fmtCZK(v){ const s = String(v); let digits = ''; for (let i=0;i<s.length;i++){ const c=s.charCodeAt(i); if (c>=48 && c<=57) digits += s[i]; } if (!digits) return ''; const n = parseInt(digits,10); if (!isFinite(n)) return ''; return new Intl.NumberFormat('cs-CZ',{style:'currency',currency:'CZK',maximumFractionDigits:0}).format(n); }
-    function fmtDate(v){ if(!v) return ''; const d=new Date(v); if(String(d)==='Invalid Date') return ''; return d.toLocaleDateString('cs-CZ'); }
-    function fmtRange(f,t){ const a=fmtDate(f), b=fmtDate(t); if(!a && !b) return ''; return (a||'') + ' - ' + (b||''); }
+    function parseISODate(v){
+      if(!v) return null;
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(v)) return null;
+      const [y,m,d]=v.split('-').map(Number);
+      const dt = new Date(Date.UTC(y, m-1, d));
+      if(dt.getUTCFullYear()!==y || (dt.getUTCMonth()+1)!==m || dt.getUTCDate()!==d) return null;
+      return dt;
+    }
+    function fmtDate(v){
+      const dt = parseISODate(v);
+      if(!dt) return '';
+      return dt.toLocaleDateString('cs-CZ');
+    }
+    function fmtRange(f,t){ const a=fmtDate(f), b=fmtDate(t); if(!a && !b) return ''; if(a && b) return a + ' - ' + b; if(a && !b) return a + ' -'; if(!a && b) return '- ' + b; return ''; }
     function hasDigit(t){ for(let i=0;i<t.length;i++){ const c=t.charCodeAt(i); if(c>=48 && c<=57) return true; } return false; }
     function formatNumbersWithSpaces(text){ const s=String(text); let out='', i=0; while(i<s.length){ const ch=s.charCodeAt(i); if(ch>=48 && ch<=57){ let j=i; while(j<s.length){ const c=s.charCodeAt(j); if(c<48||c>57) break; j++; } const num=s.slice(i,j); let rev='',cnt=0; for(let k=num.length-1;k>=0;k--){ rev+=num[k]; cnt++; if(cnt%3===0 && k!==0) rev+=' '; } out+=rev.split('').reverse().join(''); i=j; } else { out+=s[i]; i++; } } return out; }
     function ensureKcSuffix(text){
@@ -356,6 +369,16 @@ Doba určitá, zkrácený úvazek, zkušební doba...."></textarea>
       printBtn: $('#printBtn'), resetBtn: $('#resetBtn'),
       pv: { genAt: $('#genAt'), printTitle: $('#printTitle'), fullName: $('#pv_fullName'), company: $('#pv_company'), foreigner: $('#pv_foreigner'), catRole: $('#pv_catRole'), contractRole: $('#pv_contractRole'), branch: $('#pv_branch'), payFlag: $('#pv_payFlag'), workTime: $('#pv_workTime'), rel: $('#pv_rel'), dppHead: $('#pv_dpp_head'), hourlyRow: $('#pv_hourly_row'), hourly: $('#pv_hourly'), hpp: { baseRow: $('#pv_hpp_base'), base: $('#pv_base'), kpiRow: $('#pv_hpp_kpi'), kpi: $('#pv_kpi'), osohRow: $('#pv_hpp_osoh'), osoh: $('#pv_osoh'), varRow: $('#pv_hpp_var'), v: $('#pv_var'), qRow: $('#pv_hpp_q'), q: $('#pv_q'), yearRow: $('#pv_hpp_year'), year: $('#pv_year') }, start: $('#pv_start'), signDate: $('#pv_signDate'), signer: $('#pv_signer'), signPrague: $('#pv_signPrague'), recruit: $('#pv_recruit'), home: $('#pv_home'), homePlaceRow: $('#pv_homePlace_row'), homePlace: $('#pv_homePlace'), notes: $('#pv_notes') }
     };
+
+
+    // date validation
+    function validateDateInput(el){
+      const ok = !el.value || !!parseISODate(el.value);
+      if (el){ el.classList.toggle('invalid', !ok); }
+      return ok;
+    }
+    const dateInputs = [els.baseFrom, els.kpiFrom, els.osohFrom, els.varFrom, els.varTo, els.qFrom, els.yearFrom, els.startDate, els.signDate];
+    dateInputs.forEach(el => { if(!el) return; ['input','change','blur'].forEach(ev => el.addEventListener(ev, ()=>validateDateInput(el))); });
 
     // defaults
     els.company.value='AURES Holdings';
@@ -487,12 +510,14 @@ Doba určitá, zkrácený úvazek, zkušební doba...."></textarea>
 
     function cleanBonusAmount(val){ const t=String(val||'').trim(); return /^0\s*-\s*(Kč)?$/i.test(t) ? '' : t; }
     function amountWithFrom(val, fromDate){ const amt=(val||'').toString().trim(); const when=fmtDate(fromDate); if(!amt && !when) return ''; if(amt && when) return `${amt} (od ${when})`; return amt || `od ${when}`; }
-    function amountWithRange(val, fromDate, toDate){ 
-      const amt=(val||'').toString().trim(); 
-      const range = fmtRange(fromDate, toDate); 
-      if(!amt && !range) return ''; 
-      if(amt && range) return `${amt} (${range})`; 
-      return amt || range; 
+    function amountWithRange(val, fromDate, toDate){
+      const amt=(val||'').toString().trim();
+      const a=fmtDate(fromDate), b=fmtDate(toDate);
+      let range='';
+      if(a && b) range = `${a} - ${b}`; else if(a && !b) range = `${a} -`; else if(!a && b) range = `- ${b}`; else range = '';
+      if(!amt && !range) return '';
+      if(amt && range) return `${amt} (${range})`;
+      return amt || range;
     }
 
     function updateUI(){ 
@@ -567,6 +592,7 @@ Doba určitá, zkrácený úvazek, zkušební doba...."></textarea>
     }
 
     // init
+    if (typeof dateInputs !== 'undefined') dateInputs.forEach(el => el && validateDateInput(el));
     updateUI(); updatePreview();
   </script>
 </body>
