@@ -36,6 +36,8 @@
     button{ border:1px solid var(--accent); background:#fff; color:var(--accent); padding:10px 14px; border-radius:12px; cursor:pointer; transition:.15s ease all; }
     button.primary{ background:var(--accent); color:#fff; }
     button:hover{ filter:brightness(.98); box-shadow:0 4px 16px rgba(0,93,168,.18); }
+    .linkbtn{ border:none; background:transparent; color:var(--accent); padding:4px 0; font-weight:700; cursor:pointer; }
+    .linkbtn:hover{ text-decoration:underline; }
     @page{ size:A4; margin:16mm; }
     @media print{ 
       body{ background:#fff; } 
@@ -53,10 +55,10 @@
     .printMeta{ color:#333; font-size:12px; }
     .printTable{ width:100%; border-collapse:collapse; font-size:13px; }
     .printTable th,.printTable td{ border:1px solid #b7cbe0; padding:8px 10px; vertical-align:top; }
-    .printTable td:first-child{ font-weight:700; color:#0b2b50; background:#f7fbff; }
-    .printTable tr:nth-child(even) td{ background:#fbfdff; }
     .printTable th{ background:#eaf2fa; text-align:left; color:#0b2b50; }
     .printTable td{ white-space:pre-wrap; }
+    .printTable td:first-child{ font-weight:700; color:#0b2b50; background:#f7fbff; }
+    .printTable tr:nth-child(even) td{ background:#fbfdff; }
     .subhead{ font-weight:600; background:#f4f9ff; }
     .ta-wrap{ position:relative; }
     .ta-list{ position:absolute; z-index:40; top:100%; left:0; right:0; background:#fff; border:1px solid var(--border); border-radius:10px; margin-top:6px; max-height:200px; overflow:auto; box-shadow:0 8px 20px rgba(16,42,67,.12); padding:6px; display:none; }
@@ -80,7 +82,7 @@
           <option value="AURES Holdings">AURES Holdings</option>
           <option>Resulmatic</option>
           <option>AURES ICT</option>
-          <option>Mototechna</option>
+          <option>Mototechna Drive</option>
           <option>Mototechna Servis</option>
         </select>
       </div>
@@ -149,12 +151,21 @@
         </select>
       </div>
 
+      <div class="field half">
+        <label for="workTime">Pracovní doba</label>
+        <select id="workTime">
+          <option selected>Kr/dl týden 12 hod</option>
+          <option>Po - Pá 8 hod</option>
+        </select>
+      </div>
+
       <div class="divider"></div>
       <div class="field half" id="hourlyWrap" style="display:none">
         <label for="hourly">Odměna (Kč / hod.)</label>
         <input id="hourly" type="text" placeholder="např. 180 Kč" />
       </div>
 
+      <!-- HPP section without heading -->
       <div class="field" id="hppSection" style="display:block">
         <div class="grid-compact">
           <label>Základní mzda</label>
@@ -183,6 +194,17 @@
             <input id="varTo" type="date" title="Do" />
           </div>
 
+          <div class="subgrid" style="grid-column:1 / -1">
+            <button type="button" id="morePayBtn" class="linkbtn">+ Další mzdové složky</button>
+          </div>
+        </div>
+
+        <div id="hppMore" class="grid-compact" style="display:none; margin-top:6px;">
+          <label>Q bonus</label>
+          <div class="subgrid">
+            <input id="qBonus" type="text" placeholder="0 - XXX Kč" value="0 - " />
+            <input id="qFrom" type="date" title="Od" />
+          </div>
           <label>Roční bonus</label>
           <div class="subgrid">
             <input id="yearBonus" type="text" placeholder="0 - XXX Kč" value="0 - " />
@@ -208,6 +230,7 @@
         <input id="signer" type="text" placeholder="jméno podepisujícího" />
       </div>
 
+      <!-- One row: signPrague + recruit + home (all thirds) -->
       <div class="field third">
         <label for="signPrague">Podpis osobně v Praze</label>
         <select id="signPrague"><option selected>Ne</option><option>Ano</option></select>
@@ -248,7 +271,8 @@
 
       <div class="field" style="grid-column:1 / -1;">
         <label for="notes">Poznámky</label>
-        <textarea id="notes" placeholder="Jakékoliv další skutečnosti, které by měla personalistka vědět..."></textarea>
+        <textarea id="notes" placeholder="Jakékoliv další skutečnosti, které by měla personalistka vědět....
+Doba určitá, zkrácený úvazek, zkušební doba...."></textarea>
       </div>
     </section>
 
@@ -271,6 +295,7 @@
         <tr><td>Smluvní pozice</td><td id="pv_contractRole"></td></tr>
         <tr><td>Pobočka</td><td id="pv_branch"></td></tr>
         <tr><td>Příznak proplacení</td><td id="pv_payFlag"></td></tr>
+        <tr><td>Pracovní doba</td><td id="pv_workTime"></td></tr>
         <tr><td>Pracovní vztah</td><td id="pv_rel"></td></tr>
         <tr id="pv_dpp_head" class="subhead"><td colspan="2">DPP / DPČ</td></tr>
         <tr id="pv_hourly_row" style="display:none"><td>Odměna</td><td id="pv_hourly"></td></tr>
@@ -278,6 +303,7 @@
         <tr id="pv_hpp_kpi" style="display:none"><td>KPI bonus</td><td id="pv_kpi"></td></tr>
         <tr id="pv_hpp_osoh" style="display:none"><td>OSOH</td><td id="pv_osoh"></td></tr>
         <tr id="pv_hpp_var" style="display:none"><td>Variabilní bonus</td><td id="pv_var"></td></tr>
+        <tr id="pv_hpp_q" style="display:none"><td>Q bonus</td><td id="pv_q"></td></tr>
         <tr id="pv_hpp_year" style="display:none"><td>Roční bonus</td><td id="pv_year"></td></tr>
         <tr><td>Datum nástupu</td><td id="pv_start"></td></tr>
         <tr><td>Datum podpisu smlouvy</td><td id="pv_signDate"></td></tr>
@@ -300,14 +326,19 @@
     function fmtRange(f,t){ const a=fmtDate(f), b=fmtDate(t); if(!a && !b) return ''; return (a||'') + ' - ' + (b||''); }
     function hasDigit(t){ for(let i=0;i<t.length;i++){ const c=t.charCodeAt(i); if(c>=48 && c<=57) return true; } return false; }
     function formatNumbersWithSpaces(text){ const s=String(text); let out='', i=0; while(i<s.length){ const ch=s.charCodeAt(i); if(ch>=48 && ch<=57){ let j=i; while(j<s.length){ const c=s.charCodeAt(j); if(c<48||c>57) break; j++; } const num=s.slice(i,j); let rev='',cnt=0; for(let k=num.length-1;k>=0;k--){ rev+=num[k]; cnt++; if(cnt%3===0 && k!==0) rev+=' '; } out+=rev.split('').reverse().join(''); i=j; } else { out+=s[i]; i++; } } return out; }
-    function ensureKcSuffix(text){ const t=String(text).trim(); if(!hasDigit(t)) return t; if(/Kč\b/.test(t)) return t; return t+' Kč'; }
-    function cleanBonusAmount(val){ const t=String(val||'').trim(); return /^0\s*-\s*(Kč)?$/i.test(t) ? '' : t; }
+    function ensureKcSuffix(text){
+      let t=String(text||'').trim();
+      // strip trailing Kč if already present (avoid duplicates)
+      t = t.replace(/\s*Kč\s*$/i,'');
+      if(!hasDigit(t)) return t;
+      return t+' Kč';
+    }
 
     const els = { 
       fullName: $('#fullName'), company: $('#company'),
       foreignerYes: $('#foreignerYes'), foreignerNo: $('#foreignerNo'),
       catRole: $('#catRole'), contractRole: $('#contractRole'), branch: $('#branch'),
-      payFlag: $('#payFlag'),
+      payFlag: $('#payFlag'), workTime: $('#workTime'),
       relHPP: $('#relHPP'), relDPP: $('#relDPP'), relDPC: $('#relDPC'),
       hourlyWrap: $('#hourlyWrap'), hourly: $('#hourly'),
       hppSection: $('#hppSection'),
@@ -315,7 +346,9 @@
       kpiBonus: $('#kpiBonus'), kpiFrom: $('#kpiFrom'),
       osoh: $('#osoh'), osohFrom: $('#osohFrom'),
       varBonus: $('#varBonus'), varFrom: $('#varFrom'), varTo: $('#varTo'),
+      qBonus: $('#qBonus'), qFrom: $('#qFrom'),
       yearBonus: $('#yearBonus'), yearFrom: $('#yearFrom'),
+      moreBtn: $('#morePayBtn'), hppMore: $('#hppMore'),
       startDate: $('#startDate'), signDate: $('#signDate'), signer: $('#signer'),
       signPrague: $('#signPrague'),
       recruitYes: $('#recruitYes'), recruitNo: $('#recruitNo'), recruitWrap: $('#recruitWrap'), recruitAmt: $('#recruitAmt'),
@@ -323,11 +356,8 @@
       homePlaceWrap: $('#homePlaceWrap'), homePlace: $('#homePlace'),
       notes: $('#notes'),
       printBtn: $('#printBtn'), resetBtn: $('#resetBtn'),
-      pv: { genAt: $('#genAt'), fullName: $('#pv_fullName'), company: $('#pv_company'), foreigner: $('#pv_foreigner'), catRole: $('#pv_catRole'), contractRole: $('#pv_contractRole'), branch: $('#pv_branch'), payFlag: $('#pv_payFlag'), rel: $('#pv_rel'), dppHead: $('#pv_dpp_head'), hourlyRow: $('#pv_hourly_row'), hourly: $('#pv_hourly'), hpp: { baseRow: $('#pv_hpp_base'), base: $('#pv_base'), kpiRow: $('#pv_hpp_kpi'), kpi: $('#pv_kpi'), osohRow: $('#pv_hpp_osoh'), osoh: $('#pv_osoh'), varRow: $('#pv_hpp_var'), v: $('#pv_var'), yearRow: $('#pv_hpp_year'), year: $('#pv_year') }, start: $('#pv_start'), signDate: $('#pv_signDate'), signer: $('#pv_signer'), signPrague: $('#pv_signPrague'), recruit: $('#pv_recruit'), home: $('#pv_home'), homePlaceRow: $('#pv_homePlace_row'), homePlace: $('#pv_homePlace'), notes: $('#pv_notes') }
+      pv: { genAt: $('#genAt'), printTitle: $('#printTitle'), fullName: $('#pv_fullName'), company: $('#pv_company'), foreigner: $('#pv_foreigner'), catRole: $('#pv_catRole'), contractRole: $('#pv_contractRole'), branch: $('#pv_branch'), payFlag: $('#pv_payFlag'), workTime: $('#pv_workTime'), rel: $('#pv_rel'), dppHead: $('#pv_dpp_head'), hourlyRow: $('#pv_hourly_row'), hourly: $('#pv_hourly'), hpp: { baseRow: $('#pv_hpp_base'), base: $('#pv_base'), kpiRow: $('#pv_hpp_kpi'), kpi: $('#pv_kpi'), osohRow: $('#pv_hpp_osoh'), osoh: $('#pv_osoh'), varRow: $('#pv_hpp_var'), v: $('#pv_var'), qRow: $('#pv_hpp_q'), q: $('#pv_q'), yearRow: $('#pv_hpp_year'), year: $('#pv_year') }, start: $('#pv_start'), signDate: $('#pv_signDate'), signer: $('#pv_signer'), signPrague: $('#pv_signPrague'), recruit: $('#pv_recruit'), home: $('#pv_home'), homePlaceRow: $('#pv_homePlace_row'), homePlace: $('#pv_homePlace'), notes: $('#pv_notes') }
     };
-    // safe mapping added
-    els.pv.printTitle = document.querySelector('#printTitle');
-
 
     // defaults
     els.company.value='AURES Holdings';
@@ -338,7 +368,8 @@
     makeExclusive(els.recruitYes, els.recruitNo);
     makeExclusive(els.homeYes, els.homeNo);
 
-    ['baseSalary','kpiBonus','osoh','varBonus','yearBonus','hourly'].forEach(id=>{ const el=els[id]; el.addEventListener('blur',()=>{ let v=el.value; v=formatNumbersWithSpaces(v); v=ensureKcSuffix(v); el.value=v; updatePreview(); }); });
+    // format on blur (and dedupe "Kč")
+    ['baseSalary','kpiBonus','osoh','varBonus','qBonus','yearBonus','hourly'].forEach(id=>{ const el=els[id]; el.addEventListener('blur',()=>{ let v=el.value; v=formatNumbersWithSpaces(v); v=ensureKcSuffix(v); el.value=v; updatePreview(); }); });
 
     [els.relHPP, els.relDPP, els.relDPC].forEach(r => r.addEventListener('change', updateUI));
 
@@ -347,7 +378,14 @@
     els.homeYes   .addEventListener('change', ()=>{ const on=els.homeYes.checked; els.homeWrap.style.display = on ? 'flex' : 'none'; els.homePlaceWrap.style.display = on ? 'block' : 'none'; updateUI(); });
     els.homeNo    .addEventListener('change', ()=>{ const on=els.homeYes.checked; els.homeWrap.style.display = on ? 'flex' : 'none'; els.homePlaceWrap.style.display = on ? 'block' : 'none'; updateUI(); });
 
-    // Typeahead (data truncated here for brevity in this rebuild; existing functionality remains if you paste full dataset)
+    // More pay items toggle
+    els.moreBtn.addEventListener('click', ()=>{ 
+      const open = els.hppMore.style.display !== 'none'; 
+      els.hppMore.style.display = open ? 'none' : 'block'; 
+      els.moreBtn.textContent = open ? '+ Další mzdové složky' : '− Skrýt mzdové složky'; 
+    });
+
+    // Typeahead
     const POSITIONS = JSON.parse(document.getElementById('position-data').textContent||'[]');
     const catList = document.getElementById('taCat');
     const conList = document.getElementById('taContract');
@@ -403,22 +441,16 @@
     });
 
     // --- Filename helpers ---
-    function stripDiacritics(s){
-      return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-    }
-    function tokenize(s){
-      const t = stripDiacritics(s).replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'').replace(/-{2,}/g,'-');
-      return t;
-    }
+    function stripDiacritics(s){ return String(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,''); }
+    function tokenize(s){ const t = stripDiacritics(s).replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'').replace(/-{2,}/g,'-'); return t; }
     function buildPdfFilename(){
       const full = (els.fullName.value||'').trim();
-      const surname = full ? full.split(/\s+/).slice(-1)[0] : '';
+      const surname = full ? full.split(/\\s+/).slice(-1)[0] : '';
       const cat = els.catRole.value||'';
       const branch = els.branch.value||'';
       const d = els.startDate.value ? new Date(els.startDate.value) : null;
       const m = d ? (d.getMonth()+1).toString() : '';
       const y = d ? d.getFullYear().toString() : '';
-
       const parts = ['Coversheet', tokenize(surname), tokenize(cat), tokenize(branch), m, y].filter(Boolean);
       return parts.join('_') || 'Coversheet';
     }
@@ -440,17 +472,20 @@
       els.branch.value='Praha 8 - Dolní Chabry';
       els.signPrague.value='Ne';
       els.payFlag.value='Ne';
+      els.workTime.value='Kr/dl týden 12 hod';
       els.relHPP.checked=true; els.relDPP.checked=false; els.relDPC.checked=false;
       els.hourlyWrap.style.display='none';
       els.hppSection.style.display='block';
+      els.hppMore.style.display='none'; els.moreBtn.textContent='+ Další mzdové složky';
       els.recruitNo.checked=true; els.recruitYes.checked=false; els.recruitWrap.style.display='none';
       els.homeNo.checked=true; els.homeYes.checked=false; els.homeWrap.style.display='none'; els.homePlaceWrap.style.display='none'; els.homePlace.value='';
       els.foreignerNo.checked=true; els.foreignerYes.checked=false;
-      els.kpiBonus.value='0 - '; els.osoh.value='0 - '; els.varBonus.value='0 - '; els.yearBonus.value='0 - ';
+      els.kpiBonus.value='0 - '; els.osoh.value='0 - '; els.varBonus.value='0 - '; els.qBonus.value='0 - '; els.yearBonus.value='0 - ';
       els.notes.value='';
       updateUI(); updatePreview();
     });
 
+    function cleanBonusAmount(val){ const t=String(val||'').trim(); return /^0\\s*-\\s*(Kč)?$/i.test(t) ? '' : t; }
     function amountWithFrom(val, fromDate){ const amt=(val||'').toString().trim(); const when=fmtDate(fromDate); if(!amt && !when) return ''; if(amt && when) return `${amt} (od ${when})`; return amt || `od ${when}`; }
     function amountWithRange(val, fromDate, toDate){ const amt=(val||'').toString().trim(); const range = fmtRange(fromDate, toDate); if(!amt && !range) return ''; if(amt && range) return `${amt} (${range})`; return amt || range; }
 
@@ -466,6 +501,7 @@
       els.pv.genAt.textContent=new Date().toLocaleString('cs-CZ');
       const nameTitle = els.fullName.value.trim();
       els.pv.printTitle.textContent = nameTitle ? `Coversheet - ${nameTitle}` : 'Coversheet';
+
       els.pv.fullName.textContent=els.fullName.value.trim();
       els.pv.company.textContent=els.company.value;
       els.pv.foreigner.textContent=els.foreignerYes.checked ? 'Ano' : 'Ne';
@@ -473,6 +509,7 @@
       els.pv.contractRole.textContent=els.contractRole.value.trim();
       els.pv.branch.textContent=els.branch.value || '';
       els.pv.payFlag.textContent=els.payFlag.value || 'Ne';
+      els.pv.workTime.textContent=els.workTime.value || '';
       const rel = document.querySelector('input[name="rel"]:checked')?.value || 'HPP';
       els.pv.rel.textContent=rel;
 
@@ -487,18 +524,21 @@
       const kpi  = amountWithFrom(cleanBonusAmount(els.kpiBonus.value), els.kpiFrom.value);
       const osoh = amountWithFrom(cleanBonusAmount(els.osoh.value), els.osohFrom.value);
       const v    = amountWithRange(cleanBonusAmount(els.varBonus.value), els.varFrom.value, els.varTo.value);
+      const q    = amountWithFrom(cleanBonusAmount(els.qBonus.value), els.qFrom.value);
       const year = amountWithFrom(cleanBonusAmount(els.yearBonus.value), els.yearFrom.value);
 
       els.pv.hpp.baseRow.style.display = hpp && base ? '' : 'none';
       els.pv.hpp.kpiRow.style.display  = hpp && kpi  ? '' : 'none';
       els.pv.hpp.osohRow.style.display = hpp && osoh ? '' : 'none';
       els.pv.hpp.varRow.style.display  = hpp && v    ? '' : 'none';
+      els.pv.hpp.qRow.style.display    = hpp && q    ? '' : 'none';
       els.pv.hpp.yearRow.style.display = hpp && year ? '' : 'none';
 
       els.pv.hpp.base.textContent=base;
       els.pv.hpp.kpi.textContent=kpi;
       els.pv.hpp.osoh.textContent=osoh;
       els.pv.hpp.v.textContent=v;
+      els.pv.hpp.q.textContent=q;
       els.pv.hpp.year.textContent=year;
 
       els.pv.start.textContent=fmtDate(els.startDate.value);
