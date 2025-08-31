@@ -66,18 +66,14 @@
     .ta-item{ padding:6px 8px; border-radius:8px; font-size:13px; cursor:pointer; }
     .ta-item:hover, .ta-item.active{ background:#e8f3ff; }
   
-/* Compact insurance chips so they stay on one line in the quarter block */
-.insurance-row { display:flex; gap:8px; align-items:center; flex-wrap:nowrap; }
-.insurance-row .chip { padding:6px 10px; font-size:13px; white-space:nowrap; }
-@media (max-width: 1100px){
-  .insurance-row .chip { padding:5px 8px; font-size:12.5px; }
-}
-
-
-/* 2x2 grid layout for the four toggle blocks */
-@media (min-width: 720px){
+/* 2x2 grid layout for the toggle row */
+@media (min-width:720px){
   .field.half{ grid-column: span 6; }
+  .field.quarter{ grid-column: span 3; } /* keep if used elsewhere */
 }
+/* compact chips for insurance to fit neatly */
+.insurance-row{ display:flex; gap:6px; align-items:center; flex-wrap:nowrap; }
+.insurance-row .chip{ padding:5px 8px; font-size:12.5px; white-space:nowrap; }
 </style>
 </head>
 <body>
@@ -171,13 +167,7 @@
 <div class="subgrid">
 <input id="kpiBonus" placeholder="0 - XXX Kč" type="text" value="0 - "/>
 <input id="kpiFrom" title="Od" type="date"/>
-</div>
-<label>OSOH</label>
-<div class="subgrid">
-<input id="osoh" placeholder="0 - XXX Kč" type="text" value="0 - "/>
-<input id="osohFrom" title="Od" type="date"/>
-</div>
-<label>Variabilní bonus</label>
+</div><label>Variabilní bonus</label>
 <div class="subgrid varRow">
 <input id="varBonus" placeholder="0 - XXX Kč" type="text" value="0 - "/>
 <input id="varFrom" title="Od" type="date"/>
@@ -188,7 +178,7 @@
 <button class="linkbtn" id="morePayBtn" type="button">+ Další mzdové složky</button>
 </div>
 </div>
-<div class="grid-compact" id="hppMore" style="display:none; margin-top:6px;">
+<div class="grid-compact" id="hppMore" style="display:none; margin-top:6px;"><label>OSOH</label><div class="subgrid"><input id="osoh" placeholder="0 - XXX Kč" type="text" value="0 - "/><input id="osohFrom" title="Od" type="date"/></div>
 <label>Q bonus</label>
 <div class="subgrid">
 <input id="qBonus" placeholder="0 - XXX Kč" type="text" value="0 - "/>
@@ -202,18 +192,18 @@
 </div>
 </div>
 <div class="divider"></div>
-<div class="field third">
+<div class="field half">
 <label for="startDate">Datum nástupu</label>
 <input id="startDate" type="date"/>
 </div>
-<div class="field third">
+<div class="field half">
 <label for="signDate">Datum podpisu smlouvy</label>
 <input id="signDate" type="date"/>
 </div>
 <div class="field third">
 <label for="signer">Podepisující</label>
 <input id="signer" placeholder="jméno podepisujícího" type="text"/>
-</div><div class="field half"> <label>Podpis osobně v Praze</label> <div class="row"> <label class="chip"><input id="signYes" type="checkbox"/> Ano</label> <label class="chip"><input checked="" id="signNo" type="checkbox"/> Ne</label> </div> <select id="signPrague" style="display:none"><option>Ne</option><option>Ano</option></select></div><div class="field half">
+</div><div class="field half"><label>Podpis osobně v Praze</label><div class="row"><label class="chip"><input id="signYes" type="checkbox"/> Ano</label><label class="chip"><input checked="" id="signNo" type="checkbox"/> Ne</label></div><select id="signPrague" style="display:none"><option>Ne</option><option>Ano</option></select></div><div class="field half">
 <label>Home office</label>
 <div class="row">
 <label class="chip"><input id="homeYes" type="checkbox"/> Ano</label>
@@ -424,14 +414,21 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
     makeExclusive(els.recruitYes, els.recruitNo);
     makeExclusive(els.homeYes, els.homeNo);
     makeExclusive(els.signYes, els.signNo);
-    (function(){ const g=[els.insAures, els.insOwn, els.insNone];
-      g.forEach(i=> i.addEventListener('change', ()=>{ if(i.checked){ g.forEach(j=>{ if(j!==i) j.checked=false; }); } else { if(!g.some(x=>x.checked)){ els.insNone.checked=true; } } updateUI(); })); })();
+    // one-of-three for insurance
+    (function(){
+      const g=[els.insAures, els.insOwn, els.insNone];
+      g.forEach(i=> i.addEventListener('change', ()=>{
+        if(i.checked){ g.forEach(j=>{ if(j!==i) j.checked=false; }); }
+        else { if(!g.some(x=>x.checked)){ els.insNone.checked=true; } }
+        updateUI();
+      }));
+    })();
+    // sync hidden select for signPrague
     function syncSign(){ els.signPrague.value = els.signYes.checked ? 'Ano' : 'Ne'; }
     els.signYes.addEventListener('change', ()=>{ if(els.signYes.checked) els.signNo.checked=false; syncSign(); });
     els.signNo.addEventListener('change', ()=>{ if(els.signNo.checked) els.signYes.checked=false; syncSign(); });
     syncSign();
-
-    ['baseSalary','kpiBonus','osoh','varBonus','qBonus','yearBonus','hourly'].forEach(id=>{ const el=els[id]; el.addEventListener('blur',()=>{ let v=el.value; v=formatNumbersWithSpaces(v); v=ensureKcSuffix(v); el.value=v; updatePreview(); }); });
+['baseSalary','kpiBonus','osoh','varBonus','qBonus','yearBonus','hourly'].forEach(id=>{ const el=els[id]; el.addEventListener('blur',()=>{ let v=el.value; v=formatNumbersWithSpaces(v); v=ensureKcSuffix(v); el.value=v; updatePreview(); }); });
 
     [els.relHPP, els.relDPP, els.relDPC].forEach(r => r.addEventListener('change', updateUI));
 
@@ -753,7 +750,8 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       }
 
       els.pv.recruit.textContent=els.recruitYes.checked ? ( 'Ano – ' + (els.recruitAmt.value==='50000' ? '50 000 Kč' : '30 000 Kč') ) : 'Ne';
-      els.pv.insurance.textContent = (els.insAures && els.insAures.checked ? 'Aures' : (els.insOwn && els.insOwn.checked ? 'Vlastní' : 'Bez pojištění'));
+      
+      els.pv.insurance.textContent = (els.insAures && els.insAures.checked) ? 'Aures' : ((els.insOwn && els.insOwn.checked) ? 'Vlastní' : 'Bez pojištění');
       els.pv.notes.textContent=els.notes.value.trim();
     }
 
