@@ -502,8 +502,16 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
 
     attachTypeahead(els.contractRole, taContract, CONTRACTS, (picked)=>{ 
       els.contractRole.value = picked; 
-      const m = POSITIONS.find(p=>norm(p.contract)===norm(picked));
-      if (m) els.catRole.value = m.catalog;
+      const pickedNorm = norm(picked);
+      // Force canonical reverse mapping for key contracts
+      if (pickedNorm === norm('Asistent/ka Call Centra')) {
+        els.catRole.value = 'CC Representative';
+      } else if (pickedNorm === norm('Specialista/ka Call Centra')) {
+        els.catRole.value = 'CC Representative - Specialist';
+      } else {
+        const m = POSITIONS.find(p=>norm(p.contract)===pickedNorm);
+        if (m) els.catRole.value = m.catalog;
+      }
       applyDefaultsForPosition();
       updatePreview();
     });
@@ -520,7 +528,7 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       const con = (els.contractRole.value || '').trim();
 
       function setDefaults(base, varMax){
-        els.baseSalary.value = String(base);
+        els.baseSalary.value = formatNumbersWithSpaces(String(base));
         els.varBonus.value = '0 - ' + formatNumbersWithSpaces(String(varMax)) + ' Kč';
         if (els.varFrom) els.varFrom.value = '';
         if (els.varTo) els.varTo.value = '';
