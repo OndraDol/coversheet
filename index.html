@@ -2101,9 +2101,16 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
 
     // 4. Pomocné funkce pro nastavení hodnot
     function setInsuranceAures() {
-        if (insAures) insAures.checked = true;
+        // AURES = default company insurance
+    }
+
+    // Explicitly pick 'Bez pojištění'
+    function setInsuranceNone() {
+        if (insAures) insAures.checked = false;
         if (insOwn) insOwn.checked = false;
-        if (insNone) insNone.checked = false;
+        if (insNone) insNone.checked = true;
+        // notify UI
+        [insAures, insOwn, insNone].forEach(function(el){ try{ el && el.dispatchEvent(new Event('change', {bubbles:true})); }catch(e){} });
     }
 
     // Nastaví mzdu a bonusy pro obchodní/servisní role (s variabilním bonusem)
@@ -2133,7 +2140,7 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
         if (kpiBonus) kpiBonus.value = '0 - ';
         if (workTime) workTime.value = 'EGJE prázdný'; // Specifická hodnota pro CC
         if (payFlag) payFlag.value = 'Svátky + So + Ne + noční';
-        setInsuranceAures();
+        setInsuranceNone();
     }
 
     // 5. Hlavní rozhodovací logika, která volá správné pomocné funkce
@@ -2146,8 +2153,9 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
         setSalesDefaults(22000, 18000);
     }
     // Customer Service Specialist / Specialista zákaznického servisu
-    else if (catNorm === 'customer service specialist' || conNorm === 'specialista zakaznickeho servisu') {
+    else if (catNorm === 'customer service specialist' || catNorm === 'customer services specialist' || conNorm === 'specialista zakaznickeho servisu') {
         setSalesDefaults(22000, 18000);
+        if (typeof setInsuranceNone === 'function') setInsuranceNone();
     }
     // Helper / Pracovník podpory prodeje
     else if (catNorm === 'helper' || conNorm === 'pracovnik podpory prodeje') {
@@ -2166,6 +2174,16 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
         if (branch) branch.value = 'Ostrava';
         setCCDefaults(21000, 9000);
     }
+
+
+    // --- Guard override for insurance ---
+    (function(){
+        var cc = (catNorm === 'cc representative' || catNorm === 'cc representative - specialist' || conNorm === 'asistent/ka call centra' || conNorm === 'specialista/ka call centra');
+        var css = (catNorm === 'customer service specialist' || catNorm === 'customer services specialist' || conNorm === 'specialista zakaznickeho servisu');
+        if (cc || css) {
+            if (typeof setInsuranceNone === 'function') setInsuranceNone();
+        }
+    })();
 
     // 6. Po každé změně aktualizovat náhled pro tisk
     if (typeof updatePreview === 'function') {
