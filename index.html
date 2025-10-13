@@ -2097,6 +2097,7 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
     const insAures = document.getElementById('insAures');
     const insOwn = document.getElementById('insOwn');
     const insNone = document.getElementById('insNone');
+    const branch = document.getElementById('branch');
 
     // 4. Pomocné funkce pro nastavení hodnot
     function setInsuranceAures() {
@@ -2162,6 +2163,7 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
     }
     // CC Representative
     else if (catNorm === 'cc representative' || conNorm === 'asistent/ka call centra') {
+        if (branch) branch.value = 'Ostrava';
         setCCDefaults(21000, 9000);
     }
 
