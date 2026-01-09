@@ -2146,15 +2146,15 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
     // 5. Hlavní rozhodovací logika, která volá správné pomocné funkce
     // Prodejce / Salesman
     if (catNorm === 'salesman' || conNorm === 'prodejce') {
-        setSalesDefaults(22000, 18000);
+        setSalesDefaults(25000, 15000);
     }
     // Test Driver / Testovací technik
     else if (catNorm === 'test driver' || conNorm === 'testovaci technik') {
-        setSalesDefaults(22000, 18000);
+        setSalesDefaults(25000, 15000);
     }
     // Customer Service Specialist / Specialista zákaznického servisu
     else if (catNorm === 'customer service specialist' || catNorm === 'customer services specialist' || conNorm === 'specialista zakaznickeho servisu') {
-        setSalesDefaults(22000, 18000);
+        setSalesDefaults(25000, 20000);
         if (typeof setInsuranceNone === 'function') setInsuranceNone();
     }
     // Helper / Pracovník podpory prodeje
@@ -2167,12 +2167,12 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
     }
     // CC Representative - Specialist
     else if (catNorm === 'cc representative - specialist' || conNorm === 'specialista/ka call centra') {
-        setCCDefaults(22000, 13000);
+        setCCDefaults(22500, 12500);
     }
     // CC Representative
     else if (catNorm === 'cc representative' || conNorm === 'asistent/ka call centra') {
         if (branch) branch.value = 'Ostrava';
-        setCCDefaults(21000, 9000);
+        setCCDefaults(22500, 7500);
     }
 
 
