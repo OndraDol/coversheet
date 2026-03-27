@@ -197,10 +197,19 @@
 <label for="signDate">Datum podpisu smlouvy</label>
 <input id="signDate" type="date"/>
 </div>
-<div class="field third">
+<div class="field half">
 <label for="signer">Podepisující</label>
 <input id="signer" placeholder="jméno podepisujícího" type="text"/>
-</div><div class="field half"><label>Podpis osobně v Praze</label><div class="row"><label class="chip"><input id="signYes" type="checkbox"/> Ano</label><label class="chip"><input checked="" id="signNo" type="checkbox"/> Ne</label></div><select id="signPrague" style="display:none"><option>Ne</option><option>Ano</option></select></div><div class="field half">
+</div>
+<div class="field half">
+<label>Podpis osobně v Praze</label>
+<div class="row">
+<label class="chip"><input id="signYes" type="checkbox"/> Ano</label>
+<label class="chip"><input checked="" id="signNo" type="checkbox"/> Ne</label>
+</div>
+<select id="signPrague" style="display:none"><option>Ne</option><option>Ano</option></select>
+</div>
+<div class="field half">
 <label>Home office</label>
 <div class="row">
 <label class="chip"><input id="homeYes" type="checkbox"/> Ano</label>
@@ -219,7 +228,8 @@
 <label class="muted" for="homePlace">Místo výkonu práce</label>
 <input id="homePlace" placeholder="např. Praha" type="text"/>
 </div>
-</div><div class="field half">
+</div>
+<div class="field half">
 <label>Náborový příspěvek</label>
 <div class="row">
 <label class="chip"><input id="recruitYes" type="checkbox"/> Ano</label>
@@ -229,7 +239,22 @@
 <label class="muted" for="recruitAmt">Výše příspěvku:</label>
 <select id="recruitAmt"><option value="30000">30 000 Kč</option><option value="50000">50 000 Kč</option></select>
 </div>
-</div><div class="field half"> <label>Pojištění</label> <div class="row insurance-row"> <label class="chip"><input id="insAures" name="insurance" type="checkbox" value="Aures"/> Aures</label> <label class="chip"><input id="insOwn" name="insurance" type="checkbox" value="Vlastní"/> Vlastní</label> <label class="chip"><input checked="" id="insNone" name="insurance" type="checkbox" value="Bez pojištění"/> Bez pojištění</label> </div> </div>
+</div>
+<div class="field half">
+<label>Kategorie 3</label>
+<div class="row">
+<label class="chip"><input checked="" id="cat3Yes" type="checkbox"/> Ano</label>
+<label class="chip"><input id="cat3No" type="checkbox"/> Ne</label>
+</div>
+</div>
+<div class="field half">
+<label>Pojištění</label>
+<div class="row insurance-row">
+<label class="chip"><input id="insAures" name="insurance" type="checkbox" value="Aures"/> Aures</label>
+<label class="chip"><input id="insOwn" name="insurance" type="checkbox" value="Vlastní"/> Vlastní</label>
+<label class="chip"><input checked="" id="insNone" name="insurance" type="checkbox" value="Bez pojištění"/> Bez pojištění</label>
+</div>
+</div>
 <div class="field" style="grid-column:1 / -1;">
 <label for="notes">Poznámky</label>
 <textarea id="notes" placeholder="Jakékoliv další skutečnosti, které by měla personalistka vědět....
@@ -272,6 +297,7 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
 <tr><td>Podepisující</td><td id="pv_signer"></td></tr>
 <tr><td>Podpis osobně v Praze</td><td id="pv_signPrague"></td></tr>
 <tr><td>Náborový příspěvek</td><td id="pv_recruit"></td></tr>
+<tr><td>Kategorie 3</td><td id="pv_cat3"></td></tr>
 <tr><td>Home office</td><td id="pv_home"></td></tr>
 <tr id="pv_homePlace_row" style="display:none"><td>Místo výkonu práce</td><td id="pv_homePlace"></td></tr>
 <tr><td>Pojištění</td><td id="pv_insurance"></td></tr>
@@ -1944,12 +1970,13 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       startDate: $('#startDate'), signDate: $('#signDate'), signer: $('#signer'),
       signPrague: $('#signPrague'), signYes: $('#signYes'), signNo: $('#signNo'), insAures: $('#insAures'), insOwn: $('#insOwn'), insNone: $('#insNone'),
       recruitYes: $('#recruitYes'), recruitNo: $('#recruitNo'), recruitWrap: $('#recruitWrap'), recruitAmt: $('#recruitAmt'),
+      cat3Yes: $('#cat3Yes'), cat3No: $('#cat3No'),
       homeYes: $('#homeYes'), homeNo: $('#homeNo'), homeWrap: $('#homeWrap'), homeType: $('#homeType'),
       homePlaceWrap: $('#homePlaceWrap'), homePlace: $('#homePlace'),
       notes: $('#notes'),
       printBtn: $('#printBtn'), resetBtn: $('#resetBtn'), copyBtn: $('#copyBtn'),
       copyStatus: $('#copyStatus'),
-      pv: { genAt: $('#genAt'), printTitle: $('#printTitle'), fullName: $('#pv_fullName'), company: $('#pv_company'), foreigner: $('#pv_foreigner'), catRole: $('#pv_catRole'), contractRole: $('#pv_contractRole'), branch: $('#pv_branch'), payFlag: $('#pv_payFlag'), workTime: $('#pv_workTime'), rel: $('#pv_rel'), dppHead: $('#pv_dpp_head'), hourlyRow: $('#pv_hourly_row'), hourly: $('#pv_hourly'), hpp: { baseRow: $('#pv_hpp_base'), base: $('#pv_base'), kpiRow: $('#pv_hpp_kpi'), kpi: $('#pv_kpi'), osohRow: $('#pv_hpp_osoh'), osoh: $('#pv_osoh'), varRow: $('#pv_hpp_var'), v: $('#pv_var'), qRow: $('#pv_hpp_q'), q: $('#pv_q'), yearRow: $('#pv_hpp_year'), year: $('#pv_year') }, start: $('#pv_start'), signDate: $('#pv_signDate'), signer: $('#pv_signer'), signPrague: $('#pv_signPrague'), recruit: $('#pv_recruit'), home: $('#pv_home'), homePlaceRow: $('#pv_homePlace_row'), homePlace: $('#pv_homePlace'), insurance: $('#pv_insurance'), notes: $('#pv_notes') }
+      pv: { genAt: $('#genAt'), printTitle: $('#printTitle'), fullName: $('#pv_fullName'), company: $('#pv_company'), foreigner: $('#pv_foreigner'), catRole: $('#pv_catRole'), contractRole: $('#pv_contractRole'), branch: $('#pv_branch'), payFlag: $('#pv_payFlag'), workTime: $('#pv_workTime'), rel: $('#pv_rel'), dppHead: $('#pv_dpp_head'), hourlyRow: $('#pv_hourly_row'), hourly: $('#pv_hourly'), hpp: { baseRow: $('#pv_hpp_base'), base: $('#pv_base'), kpiRow: $('#pv_hpp_kpi'), kpi: $('#pv_kpi'), osohRow: $('#pv_hpp_osoh'), osoh: $('#pv_osoh'), varRow: $('#pv_hpp_var'), v: $('#pv_var'), qRow: $('#pv_hpp_q'), q: $('#pv_q'), yearRow: $('#pv_hpp_year'), year: $('#pv_year') }, start: $('#pv_start'), signDate: $('#pv_signDate'), signer: $('#pv_signer'), signPrague: $('#pv_signPrague'), recruit: $('#pv_recruit'), cat3: $('#pv_cat3'), home: $('#pv_home'), homePlaceRow: $('#pv_homePlace_row'), homePlace: $('#pv_homePlace'), insurance: $('#pv_insurance'), notes: $('#pv_notes') }
     };
 
     function makeExclusive(a,b){
@@ -1958,6 +1985,7 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
     }
     makeExclusive(els.foreignerYes, els.foreignerNo);
     makeExclusive(els.recruitYes, els.recruitNo);
+    makeExclusive(els.cat3Yes, els.cat3No);
     makeExclusive(els.homeYes, els.homeNo);
     makeExclusive(els.signYes, els.signNo);
     // one-of-three for insurance
@@ -2269,6 +2297,7 @@ function stripDiacritics(s){
       );
 
       rows.push(['Náborový příspěvek', esc(els.recruitYes.checked ? (els.recruitAmt.value==='50000' ? 'Ano – 50 000 Kč' : 'Ano – 30 000 Kč') : 'Ne')]);
+      rows.push(['Kategorie 3', esc(els.cat3Yes.checked ? 'Ano' : 'Ne')]);
 
       if(els.homeYes.checked){
         rows.push(['Home office', esc('Ano – ' + els.homeType.value)]);
@@ -2351,6 +2380,7 @@ function stripDiacritics(s){
       els.hppSection.style.display='block';
       els.hppMore.style.display='none'; els.moreBtn && (els.moreBtn.textContent='+ Další mzdové složky');
       els.recruitNo.checked=true; els.recruitYes.checked=false; els.recruitWrap.style.display='none';
+      els.cat3Yes.checked=true; els.cat3No.checked=false;
       els.homeNo.checked=true; els.homeYes.checked=false; els.homeWrap.style.display='none'; els.homePlaceWrap.style.display='none'; els.homePlace.value='';
       els.foreignerNo.checked=true; els.foreignerYes.checked=false;
       els.kpiBonus.value='0 - '; els.osoh.value='0 - '; els.varBonus.value='0 - '; els.qBonus && (els.qBonus.value='0 - '); els.yearBonus && (els.yearBonus.value='0 - ');
@@ -2428,6 +2458,7 @@ updatePreview();
       }
 
       els.pv.recruit.textContent=els.recruitYes.checked ? ( 'Ano – ' + (els.recruitAmt.value==='50000' ? '50 000 Kč' : '30 000 Kč') ) : 'Ne';
+      els.pv.cat3.textContent=els.cat3Yes.checked ? 'Ano' : 'Ne';
       
       els.pv.insurance.textContent = (els.insAures && els.insAures.checked) ? 'Aures' : ((els.insOwn && els.insOwn.checked) ? 'Vlastní' : 'Bez pojištění');
       els.pv.notes.textContent=els.notes.value.trim();
