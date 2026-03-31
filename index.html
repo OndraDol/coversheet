@@ -230,6 +230,10 @@
 </div>
 </div>
 <div class="field half">
+<label for="grading">Grading</label>
+<input id="grading" placeholder="" type="text"/>
+</div>
+<div class="field half">
 <label>Náborový příspěvek</label>
 <div class="row">
 <label class="chip"><input id="recruitYes" type="checkbox"/> Ano</label>
@@ -300,6 +304,7 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
 <tr><td>Kategorie 3</td><td id="pv_cat3"></td></tr>
 <tr><td>Home office</td><td id="pv_home"></td></tr>
 <tr id="pv_homePlace_row" style="display:none"><td>Místo výkonu práce</td><td id="pv_homePlace"></td></tr>
+<tr><td>Grading</td><td id="pv_grading"></td></tr>
 <tr><td>Pojištění</td><td id="pv_insurance"></td></tr>
 <tr><td>Poznámky</td><td id="pv_notes"></td></tr>
 </table>
@@ -1973,10 +1978,11 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       cat3Yes: $('#cat3Yes'), cat3No: $('#cat3No'),
       homeYes: $('#homeYes'), homeNo: $('#homeNo'), homeWrap: $('#homeWrap'), homeType: $('#homeType'),
       homePlaceWrap: $('#homePlaceWrap'), homePlace: $('#homePlace'),
+      grading: $('#grading'),
       notes: $('#notes'),
       printBtn: $('#printBtn'), resetBtn: $('#resetBtn'), copyBtn: $('#copyBtn'),
       copyStatus: $('#copyStatus'),
-      pv: { genAt: $('#genAt'), printTitle: $('#printTitle'), fullName: $('#pv_fullName'), company: $('#pv_company'), foreigner: $('#pv_foreigner'), catRole: $('#pv_catRole'), contractRole: $('#pv_contractRole'), branch: $('#pv_branch'), payFlag: $('#pv_payFlag'), workTime: $('#pv_workTime'), rel: $('#pv_rel'), dppHead: $('#pv_dpp_head'), hourlyRow: $('#pv_hourly_row'), hourly: $('#pv_hourly'), hpp: { baseRow: $('#pv_hpp_base'), base: $('#pv_base'), kpiRow: $('#pv_hpp_kpi'), kpi: $('#pv_kpi'), osohRow: $('#pv_hpp_osoh'), osoh: $('#pv_osoh'), varRow: $('#pv_hpp_var'), v: $('#pv_var'), qRow: $('#pv_hpp_q'), q: $('#pv_q'), yearRow: $('#pv_hpp_year'), year: $('#pv_year') }, start: $('#pv_start'), signDate: $('#pv_signDate'), signer: $('#pv_signer'), signPrague: $('#pv_signPrague'), recruit: $('#pv_recruit'), cat3: $('#pv_cat3'), home: $('#pv_home'), homePlaceRow: $('#pv_homePlace_row'), homePlace: $('#pv_homePlace'), insurance: $('#pv_insurance'), notes: $('#pv_notes') }
+      pv: { genAt: $('#genAt'), printTitle: $('#printTitle'), fullName: $('#pv_fullName'), company: $('#pv_company'), foreigner: $('#pv_foreigner'), catRole: $('#pv_catRole'), contractRole: $('#pv_contractRole'), branch: $('#pv_branch'), payFlag: $('#pv_payFlag'), workTime: $('#pv_workTime'), rel: $('#pv_rel'), dppHead: $('#pv_dpp_head'), hourlyRow: $('#pv_hourly_row'), hourly: $('#pv_hourly'), hpp: { baseRow: $('#pv_hpp_base'), base: $('#pv_base'), kpiRow: $('#pv_hpp_kpi'), kpi: $('#pv_kpi'), osohRow: $('#pv_hpp_osoh'), osoh: $('#pv_osoh'), varRow: $('#pv_hpp_var'), v: $('#pv_var'), qRow: $('#pv_hpp_q'), q: $('#pv_q'), yearRow: $('#pv_hpp_year'), year: $('#pv_year') }, start: $('#pv_start'), signDate: $('#pv_signDate'), signer: $('#pv_signer'), signPrague: $('#pv_signPrague'), recruit: $('#pv_recruit'), cat3: $('#pv_cat3'), home: $('#pv_home'), homePlaceRow: $('#pv_homePlace_row'), homePlace: $('#pv_homePlace'), grading: $('#pv_grading'), insurance: $('#pv_insurance'), notes: $('#pv_notes') }
     };
 
     function makeExclusive(a,b){
@@ -2306,6 +2312,8 @@ function stripDiacritics(s){
         rows.push(['Home office', 'Ne']);
       }
 
+      if(els.grading.value.trim()) rows.push(['Grading', esc(els.grading.value.trim())]);
+
       if(els.notes.value.trim()) rows.push(['Poznámky', esc(els.notes.value.trim()).replace(/\n/g,'<br>')]);
 
       const genAt = new Date().toLocaleString('cs-CZ');
@@ -2384,6 +2392,7 @@ function stripDiacritics(s){
       els.homeNo.checked=true; els.homeYes.checked=false; els.homeWrap.style.display='none'; els.homePlaceWrap.style.display='none'; els.homePlace.value='';
       els.foreignerNo.checked=true; els.foreignerYes.checked=false;
       els.kpiBonus.value='0 - '; els.osoh.value='0 - '; els.varBonus.value='0 - '; els.qBonus && (els.qBonus.value='0 - '); els.yearBonus && (els.yearBonus.value='0 - ');
+      els.grading.value='';
       els.notes.value='';
       updateUI(); updatePreview();
     });
@@ -2457,6 +2466,7 @@ updatePreview();
         els.pv.homePlaceRow.style.display='none';
       }
 
+      els.pv.grading.textContent=els.grading.value.trim();
       els.pv.recruit.textContent=els.recruitYes.checked ? ( 'Ano – ' + (els.recruitAmt.value==='50000' ? '50 000 Kč' : '30 000 Kč') ) : 'Ne';
       els.pv.cat3.textContent=els.cat3Yes.checked ? 'Ano' : 'Ne';
       
