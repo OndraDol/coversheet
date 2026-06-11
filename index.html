@@ -2201,12 +2201,13 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
     }
     // CC Representative - Specialist
     else if (catNorm === 'cc representative - specialist' || conNorm === 'specialista/ka call centra') {
-        setCCDefaults(22500, 12500);
+        if (branch) branch.value = 'Praha';
+        setCCDefaults(22500, 10000);
     }
     // CC Representative
     else if (catNorm === 'cc representative' || conNorm === 'asistent/ka call centra') {
         if (branch) branch.value = 'Ostrava';
-        setCCDefaults(22500, 7500);
+        setCCDefaults(22500, 5000);
     }
 
 
