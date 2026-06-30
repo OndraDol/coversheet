@@ -6,83 +6,199 @@
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Coversheet</title>
 <style>
-    :root { --bg:#ffffff; --card:#ffffff; --muted:#5a718a; --text:#102a43; --accent:#005DA8; --border:#e5eef6; }
-    * { box-sizing: border-box; }
-    html, body { height:100%; }
-    body { margin:0; font-family:system-ui,-apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial,"Apple Color Emoji","Segoe UI Emoji"; color:var(--text); background:#f7fbff; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .container{ max-width:1100px; margin:0 auto; padding:32px 16px 80px; }
-    header{ display:flex; align-items:center; justify-content:flex-start; gap:16px; margin-bottom:20px; border-top:6px solid var(--accent); padding-top:16px; }
-    h1{ font-size:28px; margin:0; letter-spacing:.4px; color:#005DA8; }
-    .card{ background:var(--card); border:1px solid var(--border); border-radius:16px; box-shadow:0 8px 30px rgba(16,42,67,.08); }
-    .form{ padding:20px; display:grid; grid-template-columns:repeat(12,1fr); gap:14px; }
-    .field{ grid-column:span 12; display:flex; flex-direction:column; gap:6px; position:relative; }
-    @media (min-width:720px){ .field.half{ grid-column:span 6; } .field.third{ grid-column:span 4; } .field.two{ grid-column:span 2; } }
-    label{ font-size:12px; color:#0e2a47; font-weight:600; letter-spacing:.2px; }
-    input[type="text"], input[type="date"], select, textarea{ width:100%; border:1px solid var(--border); background:#fff; color:#102a43; padding:10px 12px; border-radius:10px; outline:none; transition:border-color .15s ease, box-shadow .15s ease; }
-    textarea{ min-height:120px; resize:vertical; }
-    input::placeholder{ color:#829ab1; }
+    :root {
+      --page:#eef3f6;
+      --surface:#ffffff;
+      --surface-soft:#f7f9fb;
+      --surface-strong:#edf4fa;
+      --text:#182536;
+      --muted:#65758a;
+      --accent:#005da8;
+      --accent-ink:#004a86;
+      --accent-soft:#e7f2fb;
+      --line:#d7e1ea;
+      --line-strong:#afc0d0;
+      --danger:#8a3a31;
+    }
+    * { box-sizing:border-box; }
+    html, body { min-height:100%; }
+    body {
+      margin:0;
+      font-family:Aptos, "Segoe UI", system-ui, sans-serif;
+      color:var(--text);
+      background:var(--page);
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+    .container{ max-width:1180px; margin:0 auto; padding:28px 20px 96px; }
+    .app-header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:24px;
+      margin-bottom:16px;
+      padding:20px 22px;
+      border:1px solid var(--line);
+      border-top:5px solid var(--accent);
+      border-radius:8px;
+      background:var(--surface);
+      box-shadow:0 14px 32px rgba(36,52,71,.08);
+    }
+    .eyebrow{ margin:0 0 4px; color:var(--muted); font-size:12px; font-weight:700; }
+    h1{ margin:0; color:var(--accent); font-size:30px; line-height:1.1; letter-spacing:0; }
+    .header-meta{ margin:0; color:var(--muted); font-size:13px; }
+    .card{ background:var(--surface); border:1px solid var(--line); border-radius:8px; box-shadow:0 16px 36px rgba(36,52,71,.08); }
+    .form{ padding:0; display:block; overflow:hidden; }
+    .form-section{ padding:22px 24px 24px; border-top:1px solid var(--line); }
+    .form-section:first-child{ border-top:0; }
+    .section-title{ display:flex; align-items:baseline; gap:10px; margin-bottom:16px; }
+    .section-index{ color:var(--accent); font-size:12px; font-weight:800; }
+    h2{ margin:0; font-size:18px; line-height:1.2; letter-spacing:0; color:#1c2d40; }
+    .section-grid{ display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:14px 16px; }
+    .field{ grid-column:1 / -1; display:flex; flex-direction:column; gap:6px; position:relative; min-width:0; }
+    .field.full{ grid-column:1 / -1; }
+    .field.half{ grid-column:span 6; }
+    .field.third{ grid-column:span 4; }
+    .field.two{ grid-column:span 2; }
+    label{ font-size:12px; color:#24384e; font-weight:700; letter-spacing:0; }
+    input[type="text"], input[type="date"], select, textarea{
+      width:100%;
+      min-height:42px;
+      border:1px solid var(--line-strong);
+      background:#fff;
+      color:var(--text);
+      padding:9px 11px;
+      border-radius:8px;
+      outline:none;
+      font:inherit;
+      transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    textarea{ min-height:118px; resize:vertical; line-height:1.45; }
+    input::placeholder, textarea::placeholder{ color:#8a99aa; }
     input:focus, select:focus, textarea:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,93,168,.18); }
-    .row{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
-    .chip{ display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--border); padding:8px 10px; border-radius:12px; color:#102a43; }
-    .chip input{ transform:translateY(1px); }
-    label.chip:has(input:checked){ background:#e8f3ff; border-color:#005DA8; color:#005DA8; }
+    .row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      min-height:38px;
+      background:#fff;
+      border:1px solid var(--line-strong);
+      padding:7px 10px;
+      border-radius:8px;
+      color:#26384c;
+      cursor:pointer;
+      user-select:none;
+    }
+    .chip input{ transform:translateY(1px); accent-color:var(--accent); }
+    label.chip:has(input:checked){ background:var(--accent-soft); border-color:var(--accent); color:var(--accent-ink); }
     .muted{ color:var(--muted); font-size:12px; }
-    .divider{ height:1px; background:var(--border); margin:8px 0 6px; grid-column:1 / -1; }
-    .grid-compact{ display:grid; grid-template-columns:1fr 170px; gap:10px; }
-    .grid-compact .subgrid{ display:grid; grid-template-columns:1fr 170px; gap:10px; grid-column:1 / -1; align-items:center; }
-    .subgrid.varRow{ grid-template-columns:minmax(160px,1fr) 150px 20px 150px; }
-    .sep{ text-align:center; }
+    .salary-panel{ margin:0; }
+    .pay-lines{ border:1px solid var(--line); border-radius:8px; background:var(--surface-soft); overflow:hidden; }
+    .pay-line{ display:grid; grid-template-columns:minmax(150px,1fr) minmax(0,2.3fr); gap:14px; align-items:center; padding:10px 12px; border-top:1px solid var(--line); }
+    .pay-line:first-child{ border-top:0; }
+    .pay-line > label{ font-size:13px; }
+    .amount-fields{ display:grid; grid-template-columns:minmax(0,1fr) 150px; gap:10px; align-items:center; }
+    .amount-fields.range{ grid-template-columns:minmax(0,1fr) 145px 18px 145px; }
+    .sep{ text-align:center; color:var(--muted); }
+    .linkbtn{ border:0; background:transparent; color:var(--accent); padding:4px 0; font-weight:800; cursor:pointer; }
+    .linkbtn:hover{ text-decoration:underline; box-shadow:none; filter:none; }
+    .ta-wrap{ position:relative; }
+    .ta-list{ position:absolute; z-index:40; top:100%; left:0; right:0; background:#fff; border:1px solid var(--line); border-radius:8px; margin-top:6px; max-height:220px; overflow:auto; box-shadow:0 12px 24px rgba(24,37,54,.14); padding:6px; display:none; }
+    .ta-item{ padding:7px 8px; border-radius:6px; font-size:13px; cursor:pointer; }
+    .ta-item:hover, .ta-item.active{ background:var(--accent-soft); }
+    .insurance-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .insurance-row .chip{ padding:7px 9px; font-size:12.5px; white-space:nowrap; }
     .actions{ display:flex; gap:10px; flex-wrap:wrap; }
-    .actions.bottom{ justify-content:center; margin-top:16px; }
-    button{ border:1px solid var(--accent); background:#fff; color:#005DA8; padding:10px 14px; border-radius:12px; cursor:pointer; transition:.15s ease all; }
-    button.primary{ background:#005DA8; color:#fff; }
-    button:hover{ filter:brightness(.98); box-shadow:0 4px 16px rgba(0,93,168,.18); }
-    .linkbtn{ border:none; background:transparent; color:#005DA8; padding:4px 0; font-weight:700; cursor:pointer; }
-    .linkbtn:hover{ text-decoration:underline; }
-    @page{ size:A4; margin:16mm; }
+    .actions.bottom{ justify-content:flex-end; margin-top:14px; }
+    .sticky-actions{
+      position:sticky;
+      bottom:0;
+      z-index:20;
+      align-items:center;
+      padding:14px 18px;
+      border:1px solid var(--line);
+      border-radius:8px;
+      background:rgba(255,255,255,.94);
+      box-shadow:0 -10px 30px rgba(36,52,71,.12);
+      backdrop-filter:blur(8px);
+    }
+    button{
+      min-height:40px;
+      border:1px solid var(--line-strong);
+      background:#fff;
+      color:var(--accent-ink);
+      padding:9px 14px;
+      border-radius:8px;
+      cursor:pointer;
+      font:inherit;
+      font-weight:750;
+      transition:.15s ease border-color, .15s ease box-shadow, .15s ease background;
+    }
+    button.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+    button.ghost{ color:var(--danger); border-color:#d9bbb6; }
+    button:hover{ border-color:var(--accent); box-shadow:0 4px 14px rgba(0,93,168,.16); }
+    #copyStatus{ align-self:center; min-width:150px; text-align:left; }
+    @page{ size:A4; margin:15mm; }
+    #printView{ display:none; padding:28px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+    .printHeader{ display:flex; justify-content:space-between; gap:18px; align-items:flex-start; padding-bottom:14px; margin-bottom:12px; border-bottom:3px solid var(--accent); }
+    .printHeader h2{ color:#10253a; margin:0; font-size:22px; }
+    .printKicker{ margin:0 0 3px; color:var(--accent); font-size:11px; font-weight:800; }
+    .printMeta{ color:#4d5f73; font-size:12px; text-align:right; }
+    .printTable{ width:100%; border-collapse:collapse; font-size:12.5px; }
+    .printTable th,.printTable td{ border:1px solid #c5d4e2; padding:7px 9px; vertical-align:top; }
+    .printTable th{ background:#e9f2f9; text-align:left; color:#10253a; }
+    .printTable td{ white-space:pre-wrap; }
+    .printTable td:first-child{ width:31%; font-weight:750; color:#17304a; background:#f8fbfd; }
+    .printSection td{ background:#dfeaf3 !important; color:#10253a; font-weight:850; border-color:#9fb6ca; }
+    .subhead{ font-weight:700; background:#eef5fa; }
+    @media (max-width:900px){
+      .field.half,.field.third,.field.two{ grid-column:1 / -1; }
+      .app-header{ align-items:flex-start; flex-direction:column; }
+      .pay-line{ grid-template-columns:1fr; }
+      .amount-fields,.amount-fields.range{ grid-template-columns:1fr; }
+      .sep{ display:none; }
+    }
     @media print{
       body{ background:#fff; }
-      header,.form,.actions{ display:none !important; }
-      #printView{ display:block !important; box-shadow:none; border:none; padding:12px; }
-      .printHeader{ margin-bottom:8px; }
-      .printHeader h2{ font-size:18px; }
-      .printTable{ font-size:12px; }
-      .printTable th,.printTable td{ padding:6px 6px; }
+      .app-header,.form,.actions{ display:none !important; }
+      .container{ max-width:none; padding:0; }
+      #printView{ display:block !important; box-shadow:none; border:none; padding:0; }
+      .printHeader{ margin-bottom:10px; }
+      .printHeader h2{ font-size:19px; }
+      .printTable{ font-size:11.5px; }
+      .printTable th,.printTable td{ padding:5px 6px; }
       tr, td, th{ page-break-inside:avoid; }
     }
-    #printView{ display:none; padding:24px; border:1px solid var(--border); border-radius:12px; background:#fff; }
-    .printHeader{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
-    .printHeader h2{ color:#0b2b50; margin:0; font-size:22px; }
-    .printMeta{ color:#333; font-size:12px; }
-    .printTable{ width:100%; border-collapse:collapse; font-size:13px; }
-    .printTable th,.printTable td{ border:1px solid #b7cbe0; padding:8px 10px; vertical-align:top; }
-    .printTable th{ background:#eaf2fa; text-align:left; color:#0b2b50; }
-    .printTable td{ white-space:pre-wrap; }
-    .printTable td:first-child{ font-weight:700; color:#0b2b50; background:#f7fbff; }
-    .printTable tr:nth-child(even) td{ background:#fbfdff; }
-    .subhead{ font-weight:600; background:#f4f9ff; }
-    .ta-wrap{ position:relative; }
-    .ta-list{ position:absolute; z-index:40; top:100%; left:0; right:0; background:#fff; border:1px solid var(--border); border-radius:10px; margin-top:6px; max-height:220px; overflow:auto; box-shadow:0 8px 20px rgba(16,42,67,.12); padding:6px; display:none; }
-    .ta-item{ padding:6px 8px; border-radius:8px; font-size:13px; cursor:pointer; }
-    .ta-item:hover, .ta-item.active{ background:#e8f3ff; }
-  
-/* 2x2 grid layout for the toggle row */
-@media (min-width:720px){
-  .field.half{ grid-column: span 6; }
-  .field.quarter{ grid-column: span 3; } /* keep if used elsewhere */
-}
-/* compact chips for insurance to fit neatly */
-.insurance-row{ display:flex; gap:6px; align-items:center; flex-wrap:nowrap; }
-.insurance-row .chip{ padding:5px 8px; font-size:12.5px; white-space:nowrap; }
 </style>
 </head>
 <body>
 <div class="container">
-<header><h1>Coversheet</h1></header>
+<header class="app-header">
+<div>
+<p class="eyebrow">HR coversheet</p>
+<h1>Coversheet</h1>
+</div>
+<p class="header-meta">AURES Holdings</p>
+</header>
 <section class="card form" id="formRoot">
-<div class="field">
+<div class="form-section">
+<div class="section-title"><span class="section-index">01</span><h2>Kandidát</h2></div>
+<div class="section-grid">
+<div class="field half">
 <label for="fullName">Jméno a příjmení</label>
 <input id="fullName" placeholder="Jan Novák" type="text"/>
+</div>
+<div class="field third">
+<label for="startDate">Datum nástupu</label>
+<input id="startDate" type="date"/>
+</div>
+<div class="field two">
+<label>Cizinec</label>
+<div class="row">
+<label class="chip"><input id="foreignerYes" type="checkbox"/> Ano</label>
+<label class="chip"><input checked="" id="foreignerNo" type="checkbox"/> Ne</label>
+</div>
 </div>
 <div class="field half">
 <label for="company">Společnost</label>
@@ -94,13 +210,11 @@
 <option>Mototechna Servis</option>
 </select>
 </div>
-<div class="field half">
-<label>Cizinec</label>
-<div class="row">
-<label class="chip"><input id="foreignerYes" type="checkbox"/> Ano</label>
-<label class="chip"><input checked="" id="foreignerNo" type="checkbox"/> Ne</label>
 </div>
 </div>
+<div class="form-section">
+<div class="section-title"><span class="section-index">02</span><h2>Pozice a pobočka</h2></div>
+<div class="section-grid">
 <div class="field half">
 <label for="catRole">Katalogová pozice</label>
 <div class="ta-wrap">
@@ -123,6 +237,15 @@
 </div>
 </div>
 <div class="field half">
+<label for="grading">Grading</label>
+<input id="grading" placeholder="" type="text"/>
+</div>
+</div>
+</div>
+<div class="form-section">
+<div class="section-title"><span class="section-index">03</span><h2>Pracovní vztah</h2></div>
+<div class="section-grid">
+<div class="field third">
 <label>Pracovní vztah</label>
 <div class="row">
 <label class="chip"><input checked="" id="relHPP" name="rel" type="radio" value="HPP"/> HPP</label>
@@ -130,7 +253,7 @@
 <label class="chip"><input id="relDPC" name="rel" type="radio" value="DPČ"/> DPČ</label>
 </div>
 </div>
-<div class="field half">
+<div class="field third">
 <label for="payFlag">Příznak proplacení</label>
 <select id="payFlag">
 <option selected="">Ne</option>
@@ -143,65 +266,87 @@
 <option>Svátky + So + Ne + noční</option>
 </select>
 </div>
-<div class="field half" id="workTimeField">
+<div class="field third" id="workTimeField">
 <label for="workTime">EGJE kalendář</label>
 <select id="workTime"><option value="40 hodin týdně">40 hodin týdně</option><option value="12 hod - směna 1">12 hod - směna 1</option><option value="12 hod - směna 2">12 hod - směna 2</option><option value="EGJE prázdný">EGJE prázdný</option><option value="20 hodin týdně">20 hodin týdně</option><option value="Jiný, viz poznámka">Jiný, viz poznámka</option></select>
 </div>
-<div class="divider"></div>
-<div class="field half" id="hourlyWrap" style="display:none">
+<div class="field third" id="hourlyWrap" style="display:none">
 <label for="hourly">Odměna (Kč / hod.)</label>
 <input id="hourly" placeholder="např. 180 Kč" type="text"/>
 </div>
-<!-- HPP section without heading -->
-<div class="field" id="hppSection" style="display:block">
-<div class="grid-compact">
-<label>Základní mzda</label>
-<div class="subgrid">
+</div>
+</div>
+<div class="form-section">
+<div class="section-title"><span class="section-index">04</span><h2>Mzda</h2></div>
+<div class="section-grid">
+<div class="field full salary-panel" id="hppSection" style="display:block">
+<div class="pay-lines">
+<div class="pay-line">
+<label for="baseSalary">Základní mzda</label>
+<div class="amount-fields">
 <input id="baseSalary" placeholder="částka v Kč" type="text"/>
-<input id="baseFrom" title="Od" type="date"/>
+<input id="baseFrom" title="Od" aria-label="Základní mzda od" type="date"/>
 </div>
-<label>KPI bonus</label>
-<div class="subgrid">
+</div>
+<div class="pay-line">
+<label for="kpiBonus">KPI bonus</label>
+<div class="amount-fields">
 <input id="kpiBonus" placeholder="0 - XXX Kč" type="text" value="0 - "/>
-<input id="kpiFrom" title="Od" type="date"/>
-</div><label>Variabilní bonus</label>
-<div class="subgrid varRow">
-<input id="varBonus" placeholder="0 - XXX Kč" type="text" value="0 - "/>
-<input id="varFrom" title="Od" type="date"/>
-<span class="sep">–</span>
-<input id="varTo" title="Do" type="date"/>
+<input id="kpiFrom" title="Od" aria-label="KPI bonus od" type="date"/>
 </div>
-<div class="subgrid" style="grid-column:1 / -1">
+</div>
+<div class="pay-line">
+<label for="varBonus">Variabilní bonus</label>
+<div class="amount-fields range">
+<input id="varBonus" placeholder="0 - XXX Kč" type="text" value="0 - "/>
+<input id="varFrom" title="Od" aria-label="Variabilní bonus od" type="date"/>
+<span class="sep">–</span>
+<input id="varTo" title="Do" aria-label="Variabilní bonus do" type="date"/>
+</div>
+</div>
+<div class="pay-line">
+<span></span>
 <button class="linkbtn" id="morePayBtn" type="button">+ Další mzdové složky</button>
 </div>
 </div>
-<div class="grid-compact" id="hppMore" style="display:none; margin-top:6px;"><label>OSOH</label><div class="subgrid"><input id="osoh" placeholder="0 - XXX Kč" type="text" value="0 - "/><input id="osohFrom" title="Od" type="date"/></div>
-<label>Q bonus</label>
-<div class="subgrid">
+<div class="pay-lines" id="hppMore" style="display:none; margin-top:8px;">
+<div class="pay-line">
+<label for="osoh">OSOH</label>
+<div class="amount-fields">
+<input id="osoh" placeholder="0 - XXX Kč" type="text" value="0 - "/>
+<input id="osohFrom" title="Od" aria-label="OSOH od" type="date"/>
+</div>
+</div>
+<div class="pay-line">
+<label for="qBonus">Q bonus</label>
+<div class="amount-fields">
 <input id="qBonus" placeholder="0 - XXX Kč" type="text" value="0 - "/>
-<input id="qFrom" title="Od" type="date"/>
+<input id="qFrom" title="Od" aria-label="Q bonus od" type="date"/>
 </div>
-<label>Roční bonus</label>
-<div class="subgrid">
+</div>
+<div class="pay-line">
+<label for="yearBonus">Roční bonus</label>
+<div class="amount-fields">
 <input id="yearBonus" placeholder="0 - XXX Kč" type="text" value="0 - "/>
-<input id="yearFrom" title="Od" type="date"/>
+<input id="yearFrom" title="Od" aria-label="Roční bonus od" type="date"/>
 </div>
 </div>
 </div>
-<div class="divider"></div>
-<div class="field half">
-<label for="startDate">Datum nástupu</label>
-<input id="startDate" type="date"/>
 </div>
-<div class="field half">
+</div>
+</div>
+<div class="form-section">
+<div class="section-title"><span class="section-index">05</span><h2>Nástup a podpisy</h2></div>
+<div class="section-grid">
+<div class="field third">
 <label for="signDate">Datum podpisu smlouvy</label>
 <input id="signDate" type="date"/>
 </div>
-<div class="field half">
+<div class="field third">
 <label for="signer">Podepisující</label>
 <input id="signer" placeholder="jméno podepisujícího" type="text"/>
 </div>
-<div class="field half">
+<div class="field third">
 <label>Podpis osobně v Praze</label>
 <div class="row">
 <label class="chip"><input id="signYes" type="checkbox"/> Ano</label>
@@ -209,6 +354,11 @@
 </div>
 <select id="signPrague" style="display:none"><option>Ne</option><option>Ano</option></select>
 </div>
+</div>
+</div>
+<div class="form-section">
+<div class="section-title"><span class="section-index">06</span><h2>Benefity a režim práce</h2></div>
+<div class="section-grid">
 <div class="field half">
 <label>Home office</label>
 <div class="row">
@@ -228,10 +378,6 @@
 <label class="muted" for="homePlace">Místo výkonu práce</label>
 <input id="homePlace" placeholder="např. Praha" type="text"/>
 </div>
-</div>
-<div class="field half">
-<label for="grading">Grading</label>
-<input id="grading" placeholder="" type="text"/>
 </div>
 <div class="field half">
 <label>Náborový příspěvek</label>
@@ -259,14 +405,21 @@
 <label class="chip"><input checked="" id="insNone" name="insurance" type="checkbox" value="Bez pojištění"/> Bez pojištění</label>
 </div>
 </div>
-<div class="field" style="grid-column:1 / -1;">
+</div>
+</div>
+<div class="form-section">
+<div class="section-title"><span class="section-index">07</span><h2>Poznámky</h2></div>
+<div class="section-grid">
+<div class="field full">
 <label for="notes">Poznámky</label>
 <textarea id="notes" placeholder="Jakékoliv další skutečnosti, které by měla personalistka vědět....
 Doba určitá, zkrácený úvazek, zkušební doba....
 Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krmela..."></textarea>
 </div>
+</div>
+</div>
 </section>
-<div class="actions bottom">
+<div class="actions bottom sticky-actions">
 <button class="primary" id="printBtn">Uložit jako PDF</button>
 <button id="copyBtn" title="Zkopíruje HTML tabulku pro Outlook">Kopírovat do schránky (HTML)</button>
 <button class="ghost" id="resetBtn">Vyčistit</button>
@@ -274,20 +427,28 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
 </div>
 <section class="card" id="printView">
 <div class="printHeader">
+<div>
+<p class="printKicker">HR coversheet</p>
 <h2 id="printTitle">Coversheet</h2>
+</div>
 <div class="printMeta"><div>Vygenerováno: <span id="genAt"></span></div></div>
 </div>
 <table class="printTable">
-<tr><th style="width:32%">Pole</th><th>Hodnota</th></tr>
+<tr><th>Pole</th><th>Hodnota</th></tr>
+<tr class="printSection"><td colspan="2">Osobní údaje</td></tr>
 <tr><td>Jméno a příjmení</td><td id="pv_fullName"></td></tr>
 <tr><td>Společnost</td><td id="pv_company"></td></tr>
 <tr><td>Cizinec</td><td id="pv_foreigner"></td></tr>
+<tr><td>Datum nástupu</td><td id="pv_start"></td></tr>
+<tr class="printSection"><td colspan="2">Pozice a pracovní vztah</td></tr>
 <tr><td>Katalogová pozice</td><td id="pv_catRole"></td></tr>
 <tr><td>Smluvní pozice</td><td id="pv_contractRole"></td></tr>
 <tr><td>Pobočka</td><td id="pv_branch"></td></tr>
+<tr><td>Grading</td><td id="pv_grading"></td></tr>
+<tr><td>Pracovní vztah</td><td id="pv_rel"></td></tr>
 <tr><td>Příznak proplacení</td><td id="pv_payFlag"></td></tr>
 <tr><td>Pracovní doba</td><td id="pv_workTime"></td></tr>
-<tr><td>Pracovní vztah</td><td id="pv_rel"></td></tr>
+<tr class="printSection"><td colspan="2">Mzda</td></tr>
 <tr class="subhead" id="pv_dpp_head"><td colspan="2">DPP / DPČ</td></tr>
 <tr id="pv_hourly_row" style="display:none"><td>Odměna</td><td id="pv_hourly"></td></tr>
 <tr id="pv_hpp_base" style="display:none"><td>Základní mzda</td><td id="pv_base"></td></tr>
@@ -296,16 +457,17 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
 <tr id="pv_hpp_var" style="display:none"><td>Variabilní bonus</td><td id="pv_var"></td></tr>
 <tr id="pv_hpp_q" style="display:none"><td>Q bonus</td><td id="pv_q"></td></tr>
 <tr id="pv_hpp_year" style="display:none"><td>Roční bonus</td><td id="pv_year"></td></tr>
-<tr><td>Datum nástupu</td><td id="pv_start"></td></tr>
+<tr class="printSection"><td colspan="2">Nástup a podpisy</td></tr>
 <tr><td>Datum podpisu smlouvy</td><td id="pv_signDate"></td></tr>
 <tr><td>Podepisující</td><td id="pv_signer"></td></tr>
 <tr><td>Podpis osobně v Praze</td><td id="pv_signPrague"></td></tr>
+<tr class="printSection"><td colspan="2">Benefity a režim práce</td></tr>
 <tr><td>Náborový příspěvek</td><td id="pv_recruit"></td></tr>
 <tr><td>Kategorie 3</td><td id="pv_cat3"></td></tr>
 <tr><td>Home office</td><td id="pv_home"></td></tr>
 <tr id="pv_homePlace_row" style="display:none"><td>Místo výkonu práce</td><td id="pv_homePlace"></td></tr>
-<tr><td>Grading</td><td id="pv_grading"></td></tr>
 <tr><td>Pojištění</td><td id="pv_insurance"></td></tr>
+<tr class="printSection"><td colspan="2">Poznámky</td></tr>
 <tr><td>Poznámky</td><td id="pv_notes"></td></tr>
 </table>
 </section>
@@ -1864,6 +2026,7 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
 <script>
     const $ = (s) => document.querySelector(s);
     const MAX_SUGGESTIONS = 10;
+    const salaryFromDateIds = ['baseFrom', 'kpiFrom', 'varFrom', 'osohFrom', 'qFrom', 'yearFrom'];
 
     function fmtCZK(v){
       const s = String(v);
@@ -1957,7 +2120,7 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       return ensureKcSuffix(formatNumbersWithSpaces(cleaned));
     }
 
-    const els = { 
+    const els = {
       fullName: $('#fullName'), company: $('#company'),
       foreignerYes: $('#foreignerYes'), foreignerNo: $('#foreignerNo'),
       catRole: $('#catRole'), contractRole: $('#contractRole'), branch: $('#branch'),
@@ -1984,6 +2147,62 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       copyStatus: $('#copyStatus'),
       pv: { genAt: $('#genAt'), printTitle: $('#printTitle'), fullName: $('#pv_fullName'), company: $('#pv_company'), foreigner: $('#pv_foreigner'), catRole: $('#pv_catRole'), contractRole: $('#pv_contractRole'), branch: $('#pv_branch'), payFlag: $('#pv_payFlag'), workTime: $('#pv_workTime'), rel: $('#pv_rel'), dppHead: $('#pv_dpp_head'), hourlyRow: $('#pv_hourly_row'), hourly: $('#pv_hourly'), hpp: { baseRow: $('#pv_hpp_base'), base: $('#pv_base'), kpiRow: $('#pv_hpp_kpi'), kpi: $('#pv_kpi'), osohRow: $('#pv_hpp_osoh'), osoh: $('#pv_osoh'), varRow: $('#pv_hpp_var'), v: $('#pv_var'), qRow: $('#pv_hpp_q'), q: $('#pv_q'), yearRow: $('#pv_hpp_year'), year: $('#pv_year') }, start: $('#pv_start'), signDate: $('#pv_signDate'), signer: $('#pv_signer'), signPrague: $('#pv_signPrague'), recruit: $('#pv_recruit'), cat3: $('#pv_cat3'), home: $('#pv_home'), homePlaceRow: $('#pv_homePlace_row'), homePlace: $('#pv_homePlace'), grading: $('#pv_grading'), insurance: $('#pv_insurance'), notes: $('#pv_notes') }
     };
+
+    const salaryFromSyncState = {};
+    let previousStartDate = els.startDate.value || '';
+
+    function setSalaryFromDateAuto(id, value, synced){
+      const el = els[id];
+      if(!el) return;
+      salaryFromSyncState[id] = salaryFromSyncState[id] || {};
+      salaryFromSyncState[id].programmatic = true;
+      el.value = value;
+      salaryFromSyncState[id].programmatic = false;
+      salaryFromSyncState[id].synced = synced;
+    }
+
+    function rememberSalaryFromManualChange(e){
+      const id = e.currentTarget.id;
+      if(salaryFromSyncState[id]?.programmatic) return;
+      const start = els.startDate.value || '';
+      salaryFromSyncState[id] = salaryFromSyncState[id] || {};
+      salaryFromSyncState[id].synced = !!start && e.currentTarget.value === start;
+    }
+
+    function syncSalaryFromDates(){
+      const nextStartDate = els.startDate.value || '';
+      const oldStartDate = previousStartDate;
+      salaryFromDateIds.forEach((id)=>{
+        const el = els[id];
+        if(!el) return;
+        const state = salaryFromSyncState[id] || {};
+        const followsStartDate = !el.value || state.synced || (!!oldStartDate && el.value === oldStartDate);
+        if(nextStartDate){
+          if(followsStartDate) setSalaryFromDateAuto(id, nextStartDate, true);
+        } else if(followsStartDate) {
+          setSalaryFromDateAuto(id, '', true);
+        }
+      });
+      previousStartDate = nextStartDate;
+      updatePreview();
+    }
+
+    function resetSalaryFromDateSync(){
+      previousStartDate = els.startDate.value || '';
+      salaryFromDateIds.forEach((id)=>{
+        const el = els[id];
+        salaryFromSyncState[id] = { synced: !!(el && previousStartDate && el.value === previousStartDate), programmatic: false };
+      });
+    }
+
+    salaryFromDateIds.forEach((id)=>{
+      const el = els[id];
+      if(!el) return;
+      salaryFromSyncState[id] = { synced: false, programmatic: false };
+      el.addEventListener('input', rememberSalaryFromManualChange);
+      el.addEventListener('change', rememberSalaryFromManualChange);
+    });
+    els.startDate.addEventListener('change', syncSalaryFromDates);
 
     function makeExclusive(a,b){
       a.addEventListener('change',()=>{ if(a.checked) b.checked=false; if(!a.checked && !b.checked) b.checked=true; updateUI(); });
@@ -2075,16 +2294,16 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       input.addEventListener('blur', ()=>{ setTimeout(()=>hide(container), 120); });
     }
 
-    attachTypeahead(els.catRole, taCat, POSITIONS.map(p=>p.catalog), (picked)=>{ 
-      els.catRole.value = picked; 
+    function applyCatalogPick(picked){
+      els.catRole.value = picked;
       const m = POSITIONS.find(p=>norm(p.catalog)===norm(picked));
       if (m && m.contract) els.contractRole.value = m.contract;
       applyDefaultsForPosition();
       updatePreview();
-    });
+    }
 
-    attachTypeahead(els.contractRole, taContract, CONTRACTS, (picked)=>{ 
-      els.contractRole.value = picked; 
+    function applyContractPick(picked){
+      els.contractRole.value = picked;
       const pickedNorm = norm(picked);
       // Force canonical reverse mapping for key contracts
       if (pickedNorm === norm('Asistent/ka Call Centra')) {
@@ -2097,9 +2316,41 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       }
       applyDefaultsForPosition();
       updatePreview();
-    });
+    }
 
-    attachTypeahead(els.branch, taBranch, BRANCHES, (picked)=>{ 
+    function applyCatalogTypedDefaults(){
+      const typed = els.catRole.value.trim();
+      if (!typed) { updatePreview(); return; }
+      const m = POSITIONS.find(p=>norm(p.catalog)===norm(typed));
+      if (m) {
+        applyCatalogPick(m.catalog);
+      } else {
+        applyDefaultsForPosition();
+        updatePreview();
+      }
+    }
+
+    function applyContractTypedDefaults(){
+      const typed = els.contractRole.value.trim();
+      if (!typed) { updatePreview(); return; }
+      const typedNorm = norm(typed);
+      const m = CONTRACTS.find(contract=>norm(contract)===typedNorm);
+      if (m) {
+        applyContractPick(m);
+      } else {
+        applyDefaultsForPosition();
+        updatePreview();
+      }
+    }
+
+    attachTypeahead(els.catRole, taCat, POSITIONS.map(p=>p.catalog), applyCatalogPick);
+    attachTypeahead(els.contractRole, taContract, CONTRACTS, applyContractPick);
+    els.catRole.addEventListener('change', applyCatalogTypedDefaults);
+    els.catRole.addEventListener('blur', applyCatalogTypedDefaults);
+    els.contractRole.addEventListener('change', applyContractTypedDefaults);
+    els.contractRole.addEventListener('blur', applyContractTypedDefaults);
+
+    attachTypeahead(els.branch, taBranch, BRANCHES, (picked)=>{
       els.branch.value = picked;
       updatePreview();
     });
@@ -2136,6 +2387,10 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
     // 4. Pomocné funkce pro nastavení hodnot
     function setInsuranceAures() {
         // AURES = default company insurance
+        if (insAures) insAures.checked = true;
+        if (insOwn) insOwn.checked = false;
+        if (insNone) insNone.checked = false;
+        [insAures, insOwn, insNone].forEach(function(el){ try{ el && el.dispatchEvent(new Event('change', {bubbles:true})); }catch(e){} });
     }
 
     // Explicitly pick 'Bez pojištění'
@@ -2231,14 +2486,17 @@ function stripDiacritics(s){
     function tokenize(s){
       return stripDiacritics(s).replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'').replace(/-{2,}/g,'-');
     }
+    function padMonth(value){
+      return String(parseInt(value,10)).padStart(2,'0');
+    }
     function extractMonthYear(s){
       s = String(s||'');
-      let m = s.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/); 
-      if(m) return {month:String(parseInt(m[2],10)), year:m[1]};
-      m = s.match(/(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})/); 
-      if(m){ let y=m[3]; if(y.length===2) y='20'+y; return {month:String(parseInt(m[2],10)), year:y}; }
+      let m = s.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+      if(m) return {month:padMonth(m[2]), year:m[1]};
+      m = s.match(/(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})/);
+      if(m){ let y=m[3]; if(y.length===2) y='20'+y; return {month:padMonth(m[2]), year:y}; }
       m = s.match(/(?:^|\D)(\d{1,2})(?:\D+)(\d{4})(?:\D|$)/);
-      if(m){ return {month:String(parseInt(m[1],10)), year:m[2]}; }
+      if(m){ return {month:padMonth(m[1]), year:m[2]}; }
       m = s.match(/(\d{4})/);
       if(m) return {month:'', year:m[1]};
       return {month:'', year:''};
@@ -2270,61 +2528,78 @@ function stripDiacritics(s){
       const q    = amountWithFrom(normalizeNonZero(els.qBonus?.value||''),  els.qFrom?.value||'');
       const year = amountWithFrom(normalizeNonZero(els.yearBonus?.value||''),els.yearFrom?.value||'');
 
-      const rows = [
-        ['Jméno a příjmení', esc(name)],
-        ['Společnost', esc(els.company.value)],
-        ['Cizinec', esc(els.foreignerYes.checked ? 'Ano' : 'Ne')],
-        ['Katalogová pozice', esc(els.catRole.value.trim())],
-        ['Smluvní pozice', esc(els.contractRole.value.trim())],
-        ['Pobočka', esc(els.branch.value||'')],
-        ['Příznak proplacení', esc(els.payFlag.value||'Ne')],
-        ['Pracovní doba', esc(els.workTime.value||'')],
-        ['Pracovní vztah', esc(rel)]
-      ];
-
+      const row = (label, value, multiline)=>[esc(label), multiline ? esc(value).replace(/\n/g,'<br>') : esc(value)];
       const showHourly = rel==='DPP' || rel==='DPČ';
+      const salaryRows = [];
       if(showHourly && els.hourly.value){
-        rows.push(['DPP/DPČ – Odměna', esc(fmtCZK(els.hourly.value) + '/hod.')]);
+        salaryRows.push(row('DPP/DPČ - Odměna', fmtCZK(els.hourly.value) + '/hod.'));
       }
 
       if(rel==='HPP'){
-        if(base) rows.push(['Základní mzda', esc(base)]);
-        if(kpi)  rows.push(['KPI bonus', esc(kpi)]);
-        if(osoh) rows.push(['OSOH', esc(osoh)]);
-        if(v)    rows.push(['Variabilní bonus', esc(v)]);
-        if(q)    rows.push(['Q bonus', esc(q)]);
-        if(year) rows.push(['Roční bonus', esc(year)]);
+        if(base) salaryRows.push(row('Základní mzda', base));
+        if(kpi)  salaryRows.push(row('KPI bonus', kpi));
+        if(osoh) salaryRows.push(row('OSOH', osoh));
+        if(v)    salaryRows.push(row('Variabilní bonus', v));
+        if(q)    salaryRows.push(row('Q bonus', q));
+        if(year) salaryRows.push(row('Roční bonus', year));
       }
 
-      rows.push(
-        ['Datum nástupu', esc(fmtDate(els.startDate.value))],
-        ['Datum podpisu smlouvy', esc(fmtDate(els.signDate.value))],
-        ['Podepisující', esc(els.signer.value.trim())],
-        ['Podpis osobně v Praze', esc(els.signPrague.value)]
-      );
-
-      rows.push(['Náborový příspěvek', esc(els.recruitYes.checked ? (els.recruitAmt.value==='50000' ? 'Ano – 50 000 Kč' : 'Ano – 30 000 Kč') : 'Ne')]);
-      rows.push(['Kategorie 3', esc(els.cat3Yes.checked ? 'Ano' : 'Ne')]);
-
+      const benefitRows = [
+        row('Náborový příspěvek', els.recruitYes.checked ? (els.recruitAmt.value==='50000' ? 'Ano - 50 000 Kč' : 'Ano - 30 000 Kč') : 'Ne'),
+        row('Kategorie 3', els.cat3Yes.checked ? 'Ano' : 'Ne')
+      ];
       if(els.homeYes.checked){
-        rows.push(['Home office', esc('Ano – ' + els.homeType.value)]);
-        if(els.homePlace.value.trim()) rows.push(['Místo výkonu práce', esc(els.homePlace.value.trim())]);
+        benefitRows.push(row('Home office', 'Ano - ' + els.homeType.value));
+        if(els.homePlace.value.trim()) benefitRows.push(row('Místo výkonu práce', els.homePlace.value.trim()));
       } else {
-        rows.push(['Home office', 'Ne']);
+        benefitRows.push(row('Home office', 'Ne'));
       }
+      benefitRows.push(row('Pojištění', (els.insAures && els.insAures.checked) ? 'Aures' : ((els.insOwn && els.insOwn.checked) ? 'Vlastní' : 'Bez pojištění')));
 
-      if(els.grading.value.trim()) rows.push(['Grading', esc(els.grading.value.trim())]);
-
-      if(els.notes.value.trim()) rows.push(['Poznámky', esc(els.notes.value.trim()).replace(/\n/g,'<br>')]);
+      const sections = [
+        { title:'Osobní údaje', rows:[
+          row('Jméno a příjmení', name),
+          row('Společnost', els.company.value),
+          row('Cizinec', els.foreignerYes.checked ? 'Ano' : 'Ne'),
+          row('Datum nástupu', fmtDate(els.startDate.value))
+        ]},
+        { title:'Pozice a pracovní vztah', rows:[
+          row('Katalogová pozice', els.catRole.value.trim()),
+          row('Smluvní pozice', els.contractRole.value.trim()),
+          row('Pobočka', els.branch.value||''),
+          row('Grading', els.grading.value.trim()),
+          row('Pracovní vztah', rel),
+          row('Příznak proplacení', els.payFlag.value||'Ne'),
+          row('Pracovní doba', els.workTime.value||'')
+        ]},
+        { title:'Mzda', rows:salaryRows },
+        { title:'Nástup a podpisy', rows:[
+          row('Datum podpisu smlouvy', fmtDate(els.signDate.value)),
+          row('Podepisující', els.signer.value.trim()),
+          row('Podpis osobně v Praze', els.signPrague.value)
+        ]},
+        { title:'Benefity a režim práce', rows:benefitRows },
+        { title:'Poznámky', rows: els.notes.value.trim() ? [row('Poznámky', els.notes.value.trim(), true)] : [] }
+      ];
 
       const genAt = new Date().toLocaleString('cs-CZ');
+      const labelStyle = 'border:1px solid #c5d4e2;padding:7px 9px;font-weight:700;background:#f8fbfd;color:#17304a;white-space:nowrap;vertical-align:top;width:31%';
+      const valueStyle = 'border:1px solid #c5d4e2;padding:7px 9px;color:#182536;vertical-align:top';
+      const sectionStyle = 'border:1px solid #9fb6ca;padding:7px 9px;background:#dfeaf3;color:#10253a;font-weight:800';
 
       let html = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>';
-      html += '<div style="font-family:Segoe UI,Arial,sans-serif;color:#102a43">';
-      html += '<h3 style="margin:0 0 8px 0;color:#0b2b50">Coversheet – ' + esc(name || '') + '</h3>';
-      html += '<div style="font-size:12px;color:#334e68;margin:0 0 8px 0">Vygenerováno: ' + esc(genAt) + '</div>';
-      html += '<table role="presentation" cellspacing="0" cellpadding="0" style="border-collapse:collapse;width:100%;max-width:860px;font-size:13px">';
-      html += rows.map(([k,v])=>'<tr><td style="border:1px solid #b7cbe0;padding:6px 8px;font-weight:600;background:#f7fbff;white-space:nowrap">'+k+'</td><td style="border:1px solid #b7cbe0;padding:6px 8px">'+(v||'')+'</td></tr>').join('');
+      html += '<div style="font-family:Segoe UI,Arial,sans-serif;color:#182536">';
+      html += '<div style="border-bottom:3px solid #005da8;padding:0 0 10px 0;margin:0 0 10px 0">';
+      html += '<div style="font-size:11px;font-weight:800;color:#005da8;margin:0 0 3px 0">HR coversheet</div>';
+      html += '<h3 style="margin:0;color:#10253a;font-size:20px">Coversheet - ' + esc(name || '') + '</h3>';
+      html += '<div style="font-size:12px;color:#4d5f73;margin:4px 0 0 0">Vygenerováno: ' + esc(genAt) + '</div>';
+      html += '</div>';
+      html += '<table role="presentation" cellspacing="0" cellpadding="0" style="border-collapse:collapse;width:100%;max-width:920px;font-size:13px;line-height:1.35">';
+      sections.forEach((section)=>{
+        if(!section.rows.length) return;
+        html += '<tr><td colspan="2" style="' + sectionStyle + '">' + esc(section.title) + '</td></tr>';
+        html += section.rows.map(([k,v])=>'<tr><td style="' + labelStyle + '">' + k + '</td><td style="' + valueStyle + '">' + (v||'') + '</td></tr>').join('');
+      });
       html += '</table></div></body></html>';
       return html;
     }
@@ -2376,14 +2651,18 @@ function stripDiacritics(s){
       setTimeout(()=>window.print(),20); 
     });
     document.getElementById('copyBtn').addEventListener('click',(e)=>{ e.preventDefault(); updatePreview(); copyHtml(); });
-    document.getElementById('resetBtn').addEventListener('click',(e)=>{ 
+    document.getElementById('resetBtn').addEventListener('click',(e)=>{
       e.preventDefault();
+      if(!confirm('Vyčistit celý formulář?')) return;
       document.getElementById('formRoot').querySelectorAll('input').forEach(inp=>{ if(inp.type==='checkbox'||inp.type==='radio') return; inp.value=''; });
       els.company.value='AURES Holdings';
       els.branch.value='Praha';
       els.signPrague.value='Ne';
+      els.insAures.checked=false;
+      els.insOwn.checked=false;
+      els.insNone.checked=true;
       els.payFlag.value='Ne';
-      els.workTime.value='Kr/dl týden 12 hod';
+      els.workTime.value='40 hodin týdně';
       els.relHPP.checked=true; els.relDPP.checked=false; els.relDPC.checked=false;
       els.hourlyWrap.style.display='none';
       els.hppSection.style.display='block';
@@ -2395,8 +2674,12 @@ function stripDiacritics(s){
       els.kpiBonus.value='0 - '; els.osoh.value='0 - '; els.varBonus.value='0 - '; els.qBonus && (els.qBonus.value='0 - '); els.yearBonus && (els.yearBonus.value='0 - ');
       els.grading.value='';
       els.notes.value='';
+      resetSalaryFromDateSync();
       updateUI(); updatePreview();
     });
+
+    document.getElementById('formRoot').addEventListener('input', updatePreview);
+    document.getElementById('formRoot').addEventListener('change', updatePreview);
 
     function updateUI(){
       const rel = document.querySelector('input[name="rel"]:checked')?.value || 'HPP';
