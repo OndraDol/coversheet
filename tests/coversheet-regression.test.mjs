@@ -23,6 +23,7 @@ test('form is organized into the planned desktop sections', () => {
     assert.match(html, new RegExp(`<h2[^>]*>${heading}</h2>`), `Missing section heading: ${heading}`);
   }
 
+  assert.doesNotMatch(html, /class="section-index"/, 'Section numbering should not be visible in headings');
   assert.match(html, /class="[^"]*\bactions\b[^"]*\bsticky-actions\b/, 'Actions should use sticky desktop action bar class');
 });
 
