@@ -2100,17 +2100,25 @@ Odeslat e-mailem na pobočku na vlastimil.kostal, jan.cechak, v kopii tomas.krme
       const t=String(val||'').trim();
       return /^0\s*-\s*(Kč)?$/i.test(t) ? '' : t;
     }
+    function hasMeaningfulAmount(val){
+      const matches = String(val||'').match(/\d[\d\s.,]*/g) || [];
+      return matches.some((part)=>{
+        const normalized = part.replace(/\s+/g,'').replace(',', '.');
+        const number = parseFloat(normalized);
+        return isFinite(number) && number > 0;
+      });
+    }
     function amountWithFrom(val, fromDate){
       const amt=(val||'').toString().trim();
       const when=fmtDate(fromDate);
-      if(!amt && !when) return '';
+      if(!hasMeaningfulAmount(amt)) return '';
       if(amt && when) return amt + ' (od ' + when + ')';
-      return amt || ('od ' + when);
+      return amt;
     }
     function amountWithRange(val, fromDate, toDate){
       const amt=(val||'').toString().trim();
       const range=fmtRange(fromDate,toDate);
-      if(!amt && !range) return '';
+      if(!hasMeaningfulAmount(amt)) return '';
       return amt && range ? (amt + ' (' + range + ')') : (amt || range);
     }
     function normalizeNonZero(val){
@@ -2530,7 +2538,7 @@ function stripDiacritics(s){
       const row = (label, value, multiline)=>[esc(label), multiline ? esc(value).replace(/\n/g,'<br>') : esc(value)];
       const showHourly = rel==='DPP' || rel==='DPČ';
       const salaryRows = [];
-      if(showHourly && els.hourly.value){
+      if(showHourly && hasMeaningfulAmount(els.hourly.value)){
         salaryRows.push(row('DPP/DPČ - Odměna', fmtCZK(els.hourly.value) + '/hod.'));
       }
 
@@ -2708,7 +2716,7 @@ updatePreview();
 
       const showHourly = rel === 'DPP' || rel === 'DPČ';
       els.pv.hourlyRow.style.display=showHourly ? '' : 'none';
-      els.pv.hourly.textContent=els.hourly.value ? (fmtCZK(els.hourly.value) + '/hod.') : '';
+      els.pv.hourly.textContent=hasMeaningfulAmount(els.hourly.value) ? (fmtCZK(els.hourly.value) + '/hod.') : '';
       els.pv.dppHead.style.display = (showHourly && !!els.pv.hourly.textContent) ? '' : 'none';
 
       const hpp = rel === 'HPP';
